@@ -108,7 +108,7 @@ describe('Basic tables: XML to grid model', () => {
 		});
 	});
 
-	describe('Headers and footers', () => {
+	describe('Headers', () => {
 		it('can deserialize a 4x4 table with 1 header row', () => {
 			coreDocument.dom.mutate(() =>
 				jsonMLMapper.parse(
@@ -139,6 +139,104 @@ describe('Basic tables: XML to grid model', () => {
 						'basictable',
 						['head', ['cell'], ['cell'], ['cell'], ['cell']],
 						['head', ['cell'], ['cell'], ['cell'], ['cell']],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+					],
+					documentNode
+				)
+			);
+
+			const tableElement = documentNode.firstChild;
+			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			chai.assert.isOk(gridModel);
+
+			chai.assert.equal(gridModel.getHeight(), 4);
+			chai.assert.equal(gridModel.getWidth(), 4);
+			chai.assert.equal(gridModel.headerRowCount, 2);
+		});
+	});
+
+	describe('Header rows and header cells', () => {
+		beforeEach(() => {
+			const optionsWithHeaderCell = {
+				table: {
+					localName: 'basictable',
+					namespaceURI: null,
+					tableFilterSelector: ''
+				},
+				headerRow: {
+					localName: 'headerRow',
+					namespaceURI: null
+				},
+				row: {
+					localName: 'row',
+					namespaceURI: null
+				},
+				headerCell: {
+					localName: 'headerCell',
+					namespaceURI: null
+				},
+				cell: {
+					localName: 'cell',
+					namespaceURI: null
+				}
+			};
+
+			documentNode = new slimdom.Document();
+			coreDocument = new CoreDocument(documentNode);
+
+			blueprint = new Blueprint(coreDocument.dom);
+			basicTableDefinition = new BasicTableDefinition(optionsWithHeaderCell);
+		});
+
+		it('can deserialize a 4x4 table with 1 header row', () => {
+			coreDocument.dom.mutate(() =>
+				jsonMLMapper.parse(
+					[
+						'basictable',
+						[
+							'headerRow',
+							['headerCell'],
+							['headerCell'],
+							['headerCell'],
+							['headerCell']
+						],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+					],
+					documentNode
+				)
+			);
+
+			const tableElement = documentNode.firstChild;
+			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			chai.assert.isOk(gridModel);
+
+			chai.assert.equal(gridModel.getHeight(), 4);
+			chai.assert.equal(gridModel.getWidth(), 4);
+			chai.assert.equal(gridModel.headerRowCount, 1);
+		});
+
+		it('can deserialize a 4x4 table with 2 header rows', () => {
+			coreDocument.dom.mutate(() =>
+				jsonMLMapper.parse(
+					[
+						'basictable',
+						[
+							'headerRow',
+							['headerCell'],
+							['headerCell'],
+							['headerCell'],
+							['headerCell']
+						],
+						[
+							'headerRow',
+							['headerCell'],
+							['headerCell'],
+							['headerCell'],
+							['headerCell']
+						],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']]
 					],

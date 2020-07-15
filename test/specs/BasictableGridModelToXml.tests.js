@@ -133,4 +133,69 @@ describe('Basic tables: Grid model to XML', () => {
 			]);
 		});
 	});
+
+	describe('Header rows and header cells', () => {
+		const optionsWithHeaderCell = {
+			table: {
+				localName: 'basictable',
+				namespaceURI: null,
+				tableFilterSelector: ''
+			},
+			headerRow: {
+				localName: 'headerRow',
+				namespaceURI: null
+			},
+			row: {
+				localName: 'row',
+				namespaceURI: null
+			},
+			headerCell: {
+				localName: 'headerCell',
+				namespaceURI: null
+			},
+			cell: {
+				localName: 'cell',
+				namespaceURI: null
+			}
+		};
+
+		beforeEach(() => {
+			documentNode = new slimdom.Document();
+			coreDocument = new CoreDocument(documentNode);
+			blueprint = new Blueprint(coreDocument.dom);
+
+			tableNode = documentNode.createElement('basictable');
+
+			tableDefinition = new BasicTableDefinition(optionsWithHeaderCell);
+			createTable = tableDefinition.getTableGridModelBuilder();
+
+			coreDocument.dom.mutate(() => {
+				documentNode.appendChild(tableNode);
+			});
+		});
+
+		it('can serialize a 4x4 table', () => {
+			const tableGridModel = createTable(4, 4, true, documentNode);
+			chai.assert.isTrue(
+				tableDefinition.applyToDom(
+					tableGridModel,
+					documentNode.firstChild,
+					blueprint,
+					stubFormat
+				)
+			);
+
+			blueprint.realize();
+			// The changes will be set to merge with the base index, this needs to be commited.
+			indicesManager.getIndexSet().commitMerge();
+
+			chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), [
+				'basictable',
+				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+			]);
+		});
+	});
 });

@@ -1,6 +1,7 @@
 import TableDefinition from 'fontoxml-table-flow/src/TableDefinition.js';
 import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy.js';
 import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy.js';
+import normalizeCellNodeStrategies from 'fontoxml-table-flow/src/normalizeCellNodeStrategies.js';
 import normalizeRowNodeStrategies from 'fontoxml-table-flow/src/normalizeRowNodeStrategies.js';
 
 const DEFAULT_OPTIONS = {
@@ -14,6 +15,10 @@ const DEFAULT_OPTIONS = {
 		namespaceURI: null
 	},
 	row: {
+		localName: '',
+		namespaceURI: null
+	},
+	headerCell: {
 		localName: '',
 		namespaceURI: null
 	},
@@ -32,6 +37,10 @@ function applyDefaults(options, defaultOptions) {
 	for (const defaultOptionKey of Object.keys(defaultOptions)) {
 		const defaultOption = defaultOptions[defaultOptionKey];
 		if (!(defaultOptionKey in options)) {
+			if (defaultOptionKey === 'headerCell') {
+				// headerCell is optional
+				continue;
+			}
 			throw new Error(
 				'All table parts (table, headerRow, row, cell) must be configured in the options for a basic table. Please refer to the documentation for configureAsBasicTableElements for details.'
 			);
@@ -75,7 +84,15 @@ function getTableDefinitionProperties(options) {
 	// Alias for selector parts
 	const headerRow = selectorParts.headerRow;
 	const row = selectorParts.row;
+	let headerCell = null;
 	const cell = selectorParts.cell;
+
+	if (options.headerCell) {
+		selectorParts.headerCell = `Q{${options.headerCell.namespaceURI || ''}}${
+			options.headerCell.localName
+		}`;
+		headerCell = selectorParts.headerCell;
+	}
 
 	// Properties object
 	const properties = {
@@ -84,11 +101,12 @@ function getTableDefinitionProperties(options) {
 		// Finds
 		findHeaderRowNodesXPathQuery: './' + headerRow,
 		findBodyRowNodesXPathQuery: './' + row,
-		findCellNodesXPathQuery: './' + cell,
+		findCellNodesXPathQuery: `./${cell}${headerCell ? ' | ./' + headerCell : ''}`,
 
 		// Data
-		getNumberOfColumnsXPathQuery:
-			'./*[self::' + row + ' or self::' + headerRow + '][1]/' + cell + ' => count()',
+		getNumberOfColumnsXPathQuery: `./*[self::${row} or self::${headerRow}][1]/*[self::${cell}${
+			headerCell ? ' or self::' + headerCell : ''
+		}] => count()`,
 
 		// Normalizations
 		normalizeRowNodeStrategies: [
@@ -109,6 +127,19 @@ function getTableDefinitionProperties(options) {
 		),
 		createRowStrategy: createCreateRowStrategy(options.row.namespaceURI, options.row.localName)
 	};
+
+	if (headerCell) {
+		properties.normalizeCellNodeStrategies = [
+			normalizeCellNodeStrategies.createConvertHeaderCellNodeStrategy(
+				options.headerCell.namespaceURI,
+				options.headerCell.localName
+			),
+			normalizeCellNodeStrategies.createConvertFormerHeaderCellNodeStrategy(
+				options.cell.namespaceURI,
+				options.cell.localName
+			)
+		];
+	}
 
 	return properties;
 }

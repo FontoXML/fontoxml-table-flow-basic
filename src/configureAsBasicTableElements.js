@@ -23,6 +23,11 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  *         localName: 'tr',
  *         namespaceURI: 'http://some-uri.com/tr'
  *     },
+ *     // optional
+ *     headerCell: {
+ *         localName: 'th',
+ *         namespaceURI: 'http://some-uri.com/th'
+ *     },
  *     cell: {
  *         localName: 'td',
  *         namespaceURI: 'http://some-uri.com/td'
@@ -80,23 +85,28 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  * @param  {number}          [options.priority]                       Selector priority for all elements configured by this function
  * @param  {Object}          options.table                            Configuration for the table element
  * @param  {string}          options.table.localName                  The name of the table element
- * @param  {string}          [options.table.namespaceURI=null]             The namespace URI of the table element
- * @param  {XPathTest}       [options.table.tableFilterSelector]    Additional override for which
+ * @param  {string}          [options.table.namespaceURI=null]        The namespace URI of the table element
+ * @param  {XPathTest}       [options.table.tableFilterSelector]      Additional override for which
  * basic table elements should be regarded as tables. This can be used to configure conreffed tables
  * as not being tables.
  * @param  {Object}          options.headerRow                        Configuration for the header row element
  * @param  {string}          options.headerRow.localName              The name of the header row element
- * @param  {string}          [options.headerRow.namespaceURI=null]         The namespace URI of the header row element
+ * @param  {string}          [options.headerRow.namespaceURI=null]    The namespace URI of the header row element
  * @param  {Object}          options.row                              Configuration for the whole row
  * @param  {string}          options.row.localName                    The name of the row element
- * @param  {string}          [options.row.namespaceURI=null]               The namespace URI of the row element
+ * @param  {string}          [options.row.namespaceURI=null]          The namespace URI of the row element
+ * @param  {Object}          [options.headerCell]                     Configuration for the header
+ * cell element. This option is optional. If it is not set, the cell option will be used for headerCell.
+ * @param  {string}          [options.headerCell.localName]           The name of the header cell element
+ * @param  {string}          [options.headerCell.namespaceURI=null]   The namespace URI of the
+ * header cell
  * @param  {Object}          options.cell                             Configuration for the cell element
  * @param  {string}          options.cell.localName                   The name of the cell element
- * @param  {string}          [options.cell.namespaceURI=null]              The namespace URI of the cell element
+ * @param  {string}          [options.cell.namespaceURI=null]         The namespace URI of the cell element
  * @param  {string}          [options.cell.defaultTextContainer=null] The default text container for the cell element
- * @param  {boolean}         [options.showInsertionWidget=false]            To add insertion buttons which insert a column or a row to a specific place, default false.
- * @param  {boolean}         [options.showHighlightingWidget=false]         To add highlighting bars which highlight columns and rows, and provide operations popover, default false.
- * @param  {Widget[]}   [options.rowBefore]                      To add row icon widgets by using {@link createIconWidget}. Row widgets are linked to the row elements of the table. Any widget can be added but only icon widget is supported.
+ * @param  {boolean}         [options.showInsertionWidget=false]      To add insertion buttons which insert a column or a row to a specific place, default false.
+ * @param  {boolean}         [options.showHighlightingWidget=false]   To add highlighting bars which highlight columns and rows, and provide operations popover, default false.
+ * @param  {Widget[]}        [options.rowBefore]                      To add row icon widgets by using {@link createIconWidget}. Row widgets are linked to the row elements of the table. Any widget can be added but only icon widget is supported.
  * @param  {boolean}         [options.useDefaultContextMenu=true]     Whether or not to use a preconfigured context menu for elements within the table
  */
 export default function configureAsBasicTableElements(sxModule, options) {

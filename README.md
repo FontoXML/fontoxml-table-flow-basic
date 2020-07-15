@@ -44,6 +44,15 @@ configureAsBasicTableElements(sxModule, {
 		namespaceURI: 'http://some-uri.com/tr'
 	},
 
+	// Having headerCell option is optional
+	headerCell: {
+		// The name of the header cell element. If you have headerCell option, localName is required.
+		localName: 'th',
+
+		// The uri for the header cell element (optional)
+		namespaceURI: 'http://some-uri.com/th'
+	},
+
 	cell: {
 		// The name of the cell element
 		localName: 'td',
