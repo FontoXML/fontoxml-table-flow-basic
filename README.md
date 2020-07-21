@@ -71,6 +71,13 @@ configureAsBasicTableElements(sxModule, {
 		})
 	],
 
+	// Widget are before columns. Column widgets are linked to the cell elements in the first row. Any widget can be used, but only the {@link iconWidget} is supported here. Optional, defaults to an empty array.
+	columnBefore: [
+		createIconWidget('lcTime-value-edit', {
+			clickOperation: 'do-nothing'
+		})
+	],
+
 	// This will show buttons that insert a new column or row. Optional, defaults to false.
 	showInsertionWidget: true,
 
