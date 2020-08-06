@@ -44,8 +44,8 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  * });
  * ```
  *
- * As basic tables do not use elements to define columns, the columnBefore widget area is not
- * supported.
+ * Basic tables do not use elements to define columns, that is why the columnBefore widgets are
+ * linked to the cell elements in the first row.
  *
  * Example usage for the table widgets:
  *
@@ -82,6 +82,19 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  *     showHighlightingWidget: true
  * });
  *```
+ *
+ * The cell element menu button widgets are added based on the existence of contextual operations on
+ * cell level. Make sure that only cell-specific operations are added to the cell widget, so that
+ * users are only given options relevant to them.
+ * Example on how you can add this element menu on the widget:
+ *
+ * ```
+ *	configureProperties(sxModule, 'self::cell', {
+ *		contextualOperations: [
+ *			{ name: 'contextual-set-total-cell', hideIn: ['context-menu'] }
+ *		]
+ *	});
+ * ```
  *
  * @fontosdk
  * @category  add-on/fontoxml-dita
