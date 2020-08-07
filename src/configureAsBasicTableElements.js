@@ -97,7 +97,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  * ```
  *
  * @fontosdk
- * @category  add-on/fontoxml-dita
+ * @category  add-on/fontoxml-table-flow-basic
  *
  * @param  {SxModule}        sxModule
  * @param  {Object}          options
