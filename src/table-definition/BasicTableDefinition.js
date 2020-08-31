@@ -37,7 +37,7 @@ function applyDefaults(options, defaultOptions) {
 	for (const defaultOptionKey of Object.keys(defaultOptions)) {
 		const defaultOption = defaultOptions[defaultOptionKey];
 		if (!(defaultOptionKey in options)) {
-			if (defaultOptionKey === 'headerCell') {
+			if (defaultOptionKey === 'headerCell' || defaultOptionKey === 'headerRow') {
 				// headerCell is optional
 				continue;
 			}
@@ -76,21 +76,31 @@ function getTableDefinitionProperties(options) {
 			(options.table.tableFilterSelector
 				? '[' + options.table.tableFilterSelector + ']'
 				: '')}`,
-		headerRow: `Q{${options.headerRow.namespaceURI || ''}}${options.headerRow.localName}`,
 		row: `Q{${options.row.namespaceURI || ''}}${options.row.localName}`,
 		cell: `Q{${options.cell.namespaceURI || ''}}${options.cell.localName}`
 	};
 
 	// Alias for selector parts
-	const headerRow = selectorParts.headerRow;
+	let headerRow = null;
 	const row = selectorParts.row;
 	let headerCell = null;
 	const cell = selectorParts.cell;
 
+	if (options.headerRow) {
+		const headerRowSelector = `Q{${options.headerRow.namespaceURI || ''}}${
+			options.headerRow.localName
+		}`;
+		selectorParts.headerRow =
+			headerRowSelector !== selectorParts.row ? headerRowSelector : null;
+		headerRow = selectorParts.headerRow;
+	}
+
 	if (options.headerCell) {
-		selectorParts.headerCell = `Q{${options.headerCell.namespaceURI || ''}}${
+		const headerCellSelector = `Q{${options.headerCell.namespaceURI || ''}}${
 			options.headerCell.localName
 		}`;
+		selectorParts.headerCell =
+			headerCellSelector !== selectorParts.cell ? headerCellSelector : null;
 		headerCell = selectorParts.headerCell;
 	}
 
@@ -99,26 +109,13 @@ function getTableDefinitionProperties(options) {
 		selectorParts: selectorParts,
 
 		// Finds
-		findHeaderRowNodesXPathQuery: './' + headerRow,
-		findBodyRowNodesXPathQuery: './' + row,
-		findCellNodesXPathQuery: `./${cell}${headerCell ? ' | ./' + headerCell : ''}`,
+		findBodyRowNodesXPathQuery: `child::${row}`,
+		findCellNodesXPathQuery: `child::${cell}`,
 
 		// Data
-		getNumberOfColumnsXPathQuery: `./*[self::${row} or self::${headerRow}][1]/*[self::${cell}${
-			headerCell ? ' or self::' + headerCell : ''
-		}] => count()`,
-
-		// Normalizations
-		normalizeRowNodeStrategies: [
-			normalizeRowNodeStrategies.createConvertNormalRowNodeStrategy(
-				options.headerRow.namespaceURI,
-				options.headerRow.localName
-			),
-			normalizeRowNodeStrategies.createConvertFormerHeaderRowNodeStrategy(
-				options.row.namespaceURI,
-				options.row.localName
-			)
-		],
+		getNumberOfColumnsXPathQuery: `./*[self::${row}${
+			headerRow ? ' or self::' + headerRow : ''
+		}][1]/*[self::${cell}${headerCell ? ' or self::' + headerCell : ''}] => count()`,
 
 		// Creates
 		createCellNodeStrategy: createCreateCellNodeStrategy(
@@ -128,7 +125,29 @@ function getTableDefinitionProperties(options) {
 		createRowStrategy: createCreateRowStrategy(options.row.namespaceURI, options.row.localName)
 	};
 
+	if (headerRow || headerCell) {
+		properties.findHeaderRowNodesXPathQuery = headerRow
+			? `child::${headerRow}`
+			: `child::${row}[child::${headerCell}]`;
+
+		properties.findBodyRowNodesXPathQuery = headerRow
+			? `child::${row}`
+			: `child::${row}[child::${cell}]`;
+
+		properties.normalizeRowNodeStrategies = headerRow && [
+			normalizeRowNodeStrategies.createConvertNormalRowNodeStrategy(
+				options.headerRow.namespaceURI,
+				options.headerRow.localName
+			),
+			normalizeRowNodeStrategies.createConvertFormerHeaderRowNodeStrategy(
+				options.row.namespaceURI,
+				options.row.localName
+			)
+		];
+	}
+
 	if (headerCell) {
+		properties.findCellNodesXPathQuery = `child::*[self::${cell} or self::${headerCell}]`;
 		properties.normalizeCellNodeStrategies = [
 			normalizeCellNodeStrategies.createConvertHeaderCellNodeStrategy(
 				options.headerCell.namespaceURI,

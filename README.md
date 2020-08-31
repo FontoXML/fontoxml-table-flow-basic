@@ -28,6 +28,7 @@ configureAsBasicTableElements(sxModule, {
 		tableFilterSelector: 'not(@conref)'
 	},
 
+	// Having headerRow option is optional
 	headerRow: {
 		// The name of the header row element
 		localName: 'header',
@@ -50,7 +51,10 @@ configureAsBasicTableElements(sxModule, {
 		localName: 'th',
 
 		// The uri for the header cell element (optional)
-		namespaceURI: 'http://some-uri.com/th'
+		namespaceURI: 'http://some-uri.com/th',
+
+		// The default text container used for header cell elements (optional)
+		defaultTextContainer: 'p'
 	},
 
 	cell: {
@@ -60,7 +64,7 @@ configureAsBasicTableElements(sxModule, {
 		// The uri for the cell element (optional)
 		namespaceURI: 'http://some-uri.com/td'
 
-		// The default text container used for entry elements (optional)
+		// The default text container used for cell elements (optional)
 		defaultTextContainer: 'p'
 	},
 
