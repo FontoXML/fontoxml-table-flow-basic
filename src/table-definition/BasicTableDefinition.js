@@ -25,20 +25,42 @@ const DEFAULT_OPTIONS = {
 	cell: {
 		localName: '',
 		namespaceURI: null
-	}
+	},
+
+	showInsertionWidget: false,
+	showHighlightingWidget: false,
+	rowBefore: false,
+	columnBefore: false,
+	useDefaultContextMenu: true,
+
+	// Widget menu operations
+	columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
+	rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
 };
 
+const configurableElementOptions = ['table', 'headerRow', 'row', 'headerCell', 'cell'];
+const optionalOptions = [
+	'headerRow',
+	'headerCell',
+	'showHighlightingWidget',
+	'showInsertionWidget',
+	'rowBefore',
+	'columnBefore',
+	'useDefaultContextMenu',
+	'columnWidgetMenuOperations',
+	'rowWidgetMenuOperations'
+];
+
 function applyDefaults(options, defaultOptions) {
-	// Each option must have a localName and there is no default value for it.
-	// Each option can have a namespaceURI but the default value is empty string
+	// Each element configuration option must have a localName and there is no default value for it.
+	// Each element configuration option can have a namespaceURI but the default value is empty string
 	// The default tableFilterSelector is empty string
 
 	const newOptions = {};
 	for (const defaultOptionKey of Object.keys(defaultOptions)) {
 		const defaultOption = defaultOptions[defaultOptionKey];
 		if (!(defaultOptionKey in options)) {
-			if (defaultOptionKey === 'headerCell' || defaultOptionKey === 'headerRow') {
-				// headerCell is optional
+			if (optionalOptions.some(optionalOption => optionalOption === defaultOptionKey)) {
 				continue;
 			}
 			throw new Error(
@@ -46,22 +68,27 @@ function applyDefaults(options, defaultOptions) {
 			);
 		}
 
-		const newOption = (newOptions[defaultOptionKey] = {});
 		const option = options[defaultOptionKey];
 
-		if (!option.localName || typeof option.localName !== 'string') {
-			throw new Error('Each option must have a localName.');
-		}
+		if (configurableElementOptions.some(elementOption => elementOption === defaultOptionKey)) {
+			const newElementOption = (newOptions[defaultOptionKey] = {});
 
-		newOption['localName'] = option['localName'];
-		newOption['namespaceURI'] = option.namespaceURI
-			? option.namespaceURI
-			: defaultOption.namespaceURI;
+			if (!option.localName || typeof option.localName !== 'string') {
+				throw new Error('Each element configuration option must have a localName.');
+			}
 
-		if (defaultOptionKey === 'table') {
-			newOption['tableFilterSelector'] = option.tableFilterSelector
-				? option.tableFilterSelector
-				: defaultOption.tableFilterSelector;
+			newElementOption['localName'] = option['localName'];
+			newElementOption['namespaceURI'] = option.namespaceURI
+				? option.namespaceURI
+				: defaultOption.namespaceURI;
+
+			if (defaultOptionKey === 'table') {
+				newElementOption['tableFilterSelector'] = option.tableFilterSelector
+					? option.tableFilterSelector
+					: defaultOption.tableFilterSelector;
+			}
+		} else {
+			newOptions[defaultOptionKey] = option || defaultOption;
 		}
 	}
 
@@ -122,7 +149,11 @@ function getTableDefinitionProperties(options) {
 			options.cell.namespaceURI,
 			options.cell.localName
 		),
-		createRowStrategy: createCreateRowStrategy(options.row.namespaceURI, options.row.localName)
+		createRowStrategy: createCreateRowStrategy(options.row.namespaceURI, options.row.localName),
+
+		// Widget menu operations
+		columnWidgetMenuOperations: options.columnWidgetMenuOperations,
+		rowWidgetMenuOperations: options.rowWidgetMenuOperations
 	};
 
 	if (headerRow || headerCell) {

@@ -86,7 +86,11 @@ configureAsBasicTableElements(sxModule, {
 	showInsertionWidget: true,
 
 	// This will show areas that can be hovered over to highlight a column or row and that can be clicked to show a operations popover. Optional, defaults to false.
-	showHighlightingWidget: true
+	showHighlightingWidget: true,
+
+	// In basic table, there are some operations in the column/row widget menus as default. But they can be overridden.
+ 	columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
+ 	rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
 });
 ```
 
@@ -102,4 +106,3 @@ configureProperties(sxModule, 'self::cell', {
 	]
 });
 ```
-

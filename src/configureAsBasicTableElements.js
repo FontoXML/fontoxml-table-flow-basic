@@ -81,7 +81,9 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  *         })
  *     ],
  *     showInsertionWidget: true,
- *     showHighlightingWidget: true
+ *     showHighlightingWidget: true,
+ *     columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
+ *     rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
  * });
  *```
  *
@@ -126,6 +128,8 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  * @param  {boolean}         [options.showHighlightingWidget=false]   To add highlighting bars which highlight columns and rows, and provide operations popover, default false.
  * @param  {Widget[]}        [options.rowBefore]                      To add row icon widgets by using {@link createIconWidget}. Row widgets are linked to the row elements of the table. Any widget can be added but only icon widget is supported.
  * @param  {Widget[]|null}   [options.columnBefore]                   To add column icon widgets by using {@link createIconWidget}. Column widgets are linked to the cell elements in the first row. Any widget can be added but only icon widget is supported.
+ * @param  {Object[]|null}   [options.columnWidgetMenuOperations]     To configure table widget menu for columns. It accepts an array of {@link ContextualOperation}s, but only supports "name" and "contents" properties. It is allowed to have only one layer of menu.
+ * @param  {Object[]|null}   [options.rowWidgetMenuOperations]        To configure table widget menu for rows. It accepts an array of {@link ContextualOperation}s, but only supports "name" and "contents" properties. It is allowed to have only one layer of menu.
  * @param  {boolean}         [options.useDefaultContextMenu=true]     Whether or not to use a preconfigured context menu for elements within the table
  */
 export default function configureAsBasicTableElements(sxModule, options) {
