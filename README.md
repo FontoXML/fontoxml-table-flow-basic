@@ -77,8 +77,9 @@ configureAsBasicTableElements(sxModule, {
 
 	// This widgets are before columns. Column widgets are linked to the cell elements in the first row. All widgets are supported. Optional, defaults to an empty array.
 	columnBefore: [
-		createIconWidget('lcTime-value-edit', {
-			clickOperation: 'do-nothing'
+		createIconWidget('clock-o', {
+			clickOperation: 'lcTime-value-edit',
+			tooltipContent: 'Click here to edit the duration'
 		})
 	],
 
