@@ -200,10 +200,11 @@ function getTableDefinitionProperties(options) {
 
 /**
  * Configures the table definition for basic tables.
- *
- * @param {BasicTableOptions} options
  */
 export default class BasicTableDefinition extends TableDefinition {
+	/**
+	 * @param {BasicTableOptions} options
+	 */
 	constructor(options) {
 		super(getTableDefinitionProperties(options));
 	}
