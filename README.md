@@ -1,5 +1,6 @@
 ---
 category: add-on/fontoxml-table-flow-basic
+fontosdk: true
 ---
 
 # Basic table support
