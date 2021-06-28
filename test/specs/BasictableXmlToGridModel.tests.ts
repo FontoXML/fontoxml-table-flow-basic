@@ -1,28 +1,28 @@
-import Blueprint from 'fontoxml-blueprints/src/Blueprint.js';
-import CoreDocument from 'fontoxml-core/src/Document.js';
-import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper.js';
+import Blueprint from 'fontoxml-blueprints/src/Blueprint';
+import CoreDocument from 'fontoxml-core/src/Document';
+import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
 import * as slimdom from 'slimdom';
 
-import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition.js';
+import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const options = {
 	table: {
 		localName: 'basictable',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: 'head',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: 'row',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: 'cell',
-		namespaceURI: null
-	}
+		namespaceURI: null,
+	},
 };
 
 describe('Basic tables: XML to grid model', () => {
@@ -42,11 +42,17 @@ describe('Basic tables: XML to grid model', () => {
 	describe('Basics', () => {
 		it('can deserialize a 1x1 table', () => {
 			coreDocument.dom.mutate(() =>
-				jsonMLMapper.parse(['basictable', ['row', ['cell']]], documentNode)
+				jsonMLMapper.parse(
+					['basictable', ['row', ['cell']]],
+					documentNode
+				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 1);
@@ -62,14 +68,17 @@ describe('Basic tables: XML to grid model', () => {
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);
@@ -89,17 +98,27 @@ describe('Basic tables: XML to grid model', () => {
 							['cell'],
 							['cell'],
 							['cell'],
-							['cell']
+							['cell'],
 						],
-						['row', ['cell'], ['cell'], ['!', 'some comment'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						[
+							'row',
+							['cell'],
+							['cell'],
+							['!', 'some comment'],
+							['cell'],
+							['cell'],
+						],
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);
@@ -117,14 +136,17 @@ describe('Basic tables: XML to grid model', () => {
 						['head', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);
@@ -140,14 +162,17 @@ describe('Basic tables: XML to grid model', () => {
 						['head', ['cell'], ['cell'], ['cell'], ['cell']],
 						['head', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);
@@ -162,31 +187,33 @@ describe('Basic tables: XML to grid model', () => {
 				table: {
 					localName: 'basictable',
 					namespaceURI: null,
-					tableFilterSelector: ''
+					tableFilterSelector: '',
 				},
 				headerRow: {
 					localName: 'headerRow',
-					namespaceURI: null
+					namespaceURI: null,
 				},
 				row: {
 					localName: 'row',
-					namespaceURI: null
+					namespaceURI: null,
 				},
 				headerCell: {
 					localName: 'headerCell',
-					namespaceURI: null
+					namespaceURI: null,
 				},
 				cell: {
 					localName: 'cell',
-					namespaceURI: null
-				}
+					namespaceURI: null,
+				},
 			};
 
 			documentNode = new slimdom.Document();
 			coreDocument = new CoreDocument(documentNode);
 
 			blueprint = new Blueprint(coreDocument.dom);
-			basicTableDefinition = new BasicTableDefinition(optionsWithHeaderCell);
+			basicTableDefinition = new BasicTableDefinition(
+				optionsWithHeaderCell
+			);
 		});
 
 		it('can deserialize a 4x4 table with 1 header row', () => {
@@ -199,18 +226,21 @@ describe('Basic tables: XML to grid model', () => {
 							['headerCell'],
 							['headerCell'],
 							['headerCell'],
-							['headerCell']
+							['headerCell'],
 						],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);
@@ -228,24 +258,27 @@ describe('Basic tables: XML to grid model', () => {
 							['headerCell'],
 							['headerCell'],
 							['headerCell'],
-							['headerCell']
+							['headerCell'],
 						],
 						[
 							'headerRow',
 							['headerCell'],
 							['headerCell'],
 							['headerCell'],
-							['headerCell']
+							['headerCell'],
 						],
 						['row', ['cell'], ['cell'], ['cell'], ['cell']],
-						['row', ['cell'], ['cell'], ['cell'], ['cell']]
+						['row', ['cell'], ['cell'], ['cell'], ['cell']],
 					],
 					documentNode
 				)
 			);
 
 			const tableElement = documentNode.firstChild;
-			const gridModel = basicTableDefinition.buildTableGridModel(tableElement, blueprint);
+			const gridModel = basicTableDefinition.buildTableGridModel(
+				tableElement,
+				blueprint
+			);
 			chai.assert.isOk(gridModel);
 
 			chai.assert.equal(gridModel.getHeight(), 4);

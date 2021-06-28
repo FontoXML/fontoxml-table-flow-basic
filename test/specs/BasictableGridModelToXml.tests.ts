@@ -1,41 +1,41 @@
-import Blueprint from 'fontoxml-blueprints/src/Blueprint.js';
-import CoreDocument from 'fontoxml-core/src/Document.js';
-import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper.js';
-import indicesManager from 'fontoxml-indices/src/indicesManager.js';
+import Blueprint from 'fontoxml-blueprints/src/Blueprint';
+import CoreDocument from 'fontoxml-core/src/Document';
+import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
+import indicesManager from 'fontoxml-indices/src/indicesManager';
 import * as slimdom from 'slimdom';
 
-import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition.js';
+import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const stubFormat = {
 	synthesizer: {
-		completeStructure: () => true
+		completeStructure: () => true,
 	},
 	metadata: {
-		get: (_option, _node) => false
+		get: (_option, _node) => false,
 	},
 	validator: {
-		canContain: () => true
-	}
+		canContain: () => true,
+	},
 };
 
 const options = {
 	table: {
 		localName: 'basictable',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: 'head',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: 'row',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: 'cell',
-		namespaceURI: null
-	}
+		namespaceURI: null,
+	},
 };
 
 describe('Basic tables: Grid model to XML', () => {
@@ -77,10 +77,10 @@ describe('Basic tables: Grid model to XML', () => {
 			// The changes will be set to merge with the base index, this needs to be commited.
 			indicesManager.getIndexSet().commitMerge();
 
-			chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), [
-				'basictable',
-				['row', ['cell']]
-			]);
+			chai.assert.deepEqual(
+				jsonMLMapper.serialize(documentNode.firstChild),
+				['basictable', ['row', ['cell']]]
+			);
 		});
 
 		it('can serialize a 4x4 table', () => {
@@ -98,13 +98,16 @@ describe('Basic tables: Grid model to XML', () => {
 			// The changes will be set to merge with the base index, this needs to be commited.
 			indicesManager.getIndexSet().commitMerge();
 
-			chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), [
-				'basictable',
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
-			]);
+			chai.assert.deepEqual(
+				jsonMLMapper.serialize(documentNode.firstChild),
+				[
+					'basictable',
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				]
+			);
 		});
 	});
 
@@ -124,13 +127,16 @@ describe('Basic tables: Grid model to XML', () => {
 			// The changes will be set to merge with the base index, this needs to be commited.
 			indicesManager.getIndexSet().commitMerge();
 
-			chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), [
-				'basictable',
-				['head', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
-			]);
+			chai.assert.deepEqual(
+				jsonMLMapper.serialize(documentNode.firstChild),
+				[
+					'basictable',
+					['head', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				]
+			);
 		});
 	});
 
@@ -139,24 +145,24 @@ describe('Basic tables: Grid model to XML', () => {
 			table: {
 				localName: 'basictable',
 				namespaceURI: null,
-				tableFilterSelector: ''
+				tableFilterSelector: '',
 			},
 			headerRow: {
 				localName: 'headerRow',
-				namespaceURI: null
+				namespaceURI: null,
 			},
 			row: {
 				localName: 'row',
-				namespaceURI: null
+				namespaceURI: null,
 			},
 			headerCell: {
 				localName: 'headerCell',
-				namespaceURI: null
+				namespaceURI: null,
 			},
 			cell: {
 				localName: 'cell',
-				namespaceURI: null
-			}
+				namespaceURI: null,
+			},
 		};
 
 		beforeEach(() => {
@@ -189,13 +195,22 @@ describe('Basic tables: Grid model to XML', () => {
 			// The changes will be set to merge with the base index, this needs to be commited.
 			indicesManager.getIndexSet().commitMerge();
 
-			chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), [
-				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
-			]);
+			chai.assert.deepEqual(
+				jsonMLMapper.serialize(documentNode.firstChild),
+				[
+					'basictable',
+					[
+						'headerRow',
+						['headerCell'],
+						['headerCell'],
+						['headerCell'],
+						['headerCell'],
+					],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+					['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				]
+			);
 		});
 	});
 });

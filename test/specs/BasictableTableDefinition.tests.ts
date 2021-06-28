@@ -1,25 +1,25 @@
-import readOnlyBlueprint from 'fontoxml-blueprints/src/readOnlyBlueprint.js';
+import readOnlyBlueprint from 'fontoxml-blueprints/src/readOnlyBlueprint';
 import * as slimdom from 'slimdom';
-import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition.js';
+import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const options = {
 	table: {
 		localName: 'basictable',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: 'head',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: 'row',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: 'cell',
-		namespaceURI: null
-	}
+		namespaceURI: null,
+	},
 };
 
 describe('BasicTableDefinition', () => {
@@ -46,16 +46,22 @@ describe('BasicTableDefinition', () => {
 
 	describe('isTable()', () => {
 		it('can recognize a table element', () =>
-			chai.assert.isTrue(basicTableDefinition.isTable(tableNode, readOnlyBlueprint)));
+			chai.assert.isTrue(
+				basicTableDefinition.isTable(tableNode, readOnlyBlueprint)
+			));
 	});
 
 	describe('isTableCell()', () => {
 		it('can recoginize a cell element', () =>
-			chai.assert.isTrue(basicTableDefinition.isTableCell(cellNode, readOnlyBlueprint)));
+			chai.assert.isTrue(
+				basicTableDefinition.isTableCell(cellNode, readOnlyBlueprint)
+			));
 	});
 
 	describe('isTablePart()', () => {
 		it('can recognize a table part element', () =>
-			chai.assert.isTrue(basicTableDefinition.isTablePart(rowNode, readOnlyBlueprint)));
+			chai.assert.isTrue(
+				basicTableDefinition.isTablePart(rowNode, readOnlyBlueprint)
+			));
 	});
 });

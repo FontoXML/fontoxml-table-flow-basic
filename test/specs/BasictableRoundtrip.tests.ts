@@ -1,66 +1,66 @@
-import Blueprint from 'fontoxml-blueprints/src/Blueprint.js';
-import CoreDocument from 'fontoxml-core/src/Document.js';
-import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper.js';
-import indicesManager from 'fontoxml-indices/src/indicesManager.js';
+import Blueprint from 'fontoxml-blueprints/src/Blueprint';
+import CoreDocument from 'fontoxml-core/src/Document';
+import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
+import indicesManager from 'fontoxml-indices/src/indicesManager';
 import * as slimdom from 'slimdom';
 
-import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition.js';
+import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const stubFormat = {
 	synthesizer: {
-		completeStructure: () => true
+		completeStructure: () => true,
 	},
 	metadata: {
-		get: (_option, _node) => false
+		get: (_option, _node) => false,
 	},
 	validator: {
 		canContain: () => true,
-		validateDown: () => []
-	}
+		validateDown: () => [],
+	},
 };
 
 const optionsWithoutHeaderCell = {
 	table: {
 		localName: 'basictable',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: 'head',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: 'row',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: 'cell',
-		namespaceURI: null
-	}
+		namespaceURI: null,
+	},
 };
 
 const optionsWithHeaderCell = {
 	table: {
 		localName: 'basictable',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: 'headerRow',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: 'row',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	headerCell: {
 		localName: 'headerCell',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: 'cell',
-		namespaceURI: null
-	}
+		namespaceURI: null,
+	},
 };
 
 describe('Basic tables: XML to XML roundtrip', () => {
@@ -75,23 +75,39 @@ describe('Basic tables: XML to XML roundtrip', () => {
 		blueprint = new Blueprint(coreDocument.dom);
 	});
 
-	function transformTable(jsonIn, jsonOut, mutateGridModel = () => {}, options) {
+	function transformTable(
+		jsonIn,
+		jsonOut,
+		mutateGridModel = () => {},
+		options
+	) {
 		coreDocument.dom.mutate(() => jsonMLMapper.parse(jsonIn, documentNode));
 
 		const tableDefinition = new BasicTableDefinition(options);
 		const tableNode = documentNode.firstChild;
-		const gridModel = tableDefinition.buildTableGridModel(tableNode, blueprint);
+		const gridModel = tableDefinition.buildTableGridModel(
+			tableNode,
+			blueprint
+		);
 		chai.assert.isOk(gridModel);
 
 		mutateGridModel(gridModel);
 
-		const success = tableDefinition.applyToDom(gridModel, tableNode, blueprint, stubFormat);
+		const success = tableDefinition.applyToDom(
+			gridModel,
+			tableNode,
+			blueprint,
+			stubFormat
+		);
 		chai.assert.isTrue(success);
 
 		blueprint.realize();
 		// The changes will be set to merge with the base index, this needs to be commited.
 		indicesManager.getIndexSet().commitMerge();
-		chai.assert.deepEqual(jsonMLMapper.serialize(documentNode.firstChild), jsonOut);
+		chai.assert.deepEqual(
+			jsonMLMapper.serialize(documentNode.firstChild),
+			jsonOut
+		);
 	}
 
 	describe('Without changes', () => {
@@ -100,7 +116,12 @@ describe('Basic tables: XML to XML roundtrip', () => {
 
 			const jsonOut = ['basictable', ['row', ['cell']]];
 
-			transformTable(jsonIn, jsonOut, undefined, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				undefined,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, changing nothing', () => {
@@ -109,7 +130,7 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
 			const jsonOut = [
@@ -117,10 +138,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, undefined, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				undefined,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 
@@ -131,20 +157,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.increaseHeaderRowCount(1);
+			const mutateGridModel = (gridModel) =>
+				gridModel.increaseHeaderRowCount(1);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, increasing the header row count by 1', () => {
@@ -153,20 +185,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.increaseHeaderRowCount(1);
+			const mutateGridModel = (gridModel) =>
+				gridModel.increaseHeaderRowCount(1);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 2 header rows, decreasing the header row count by 1', () => {
@@ -175,20 +213,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.decreaseHeaderRowCount();
+			const mutateGridModel = (gridModel) =>
+				gridModel.decreaseHeaderRowCount();
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, decreasing the header row count by 1', () => {
@@ -197,20 +241,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.decreaseHeaderRowCount();
+			const mutateGridModel = (gridModel) =>
+				gridModel.decreaseHeaderRowCount();
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 
@@ -221,86 +271,158 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.increaseHeaderRowCount(1);
+			const mutateGridModel = (gridModel) =>
+				gridModel.increaseHeaderRowCount(1);
 
 			const jsonOut = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, increasing the header row count by 1', () => {
 			const jsonIn = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.increaseHeaderRowCount(1);
+			const mutateGridModel = (gridModel) =>
+				gridModel.increaseHeaderRowCount(1);
 
 			const jsonOut = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 2 header rows, decreasing the header row count by 1', () => {
 			const jsonIn = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.decreaseHeaderRowCount();
+			const mutateGridModel = (gridModel) =>
+				gridModel.decreaseHeaderRowCount();
 
 			const jsonOut = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, decreasing the header row count by 1', () => {
 			const jsonIn = [
 				'basictable',
-				['headerRow', ['headerCell'], ['headerCell'], ['headerCell'], ['headerCell']],
+				[
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.decreaseHeaderRowCount();
+			const mutateGridModel = (gridModel) =>
+				gridModel.decreaseHeaderRowCount();
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithHeaderCell
+			);
 		});
 	});
 
@@ -311,10 +433,11 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertRow(0, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertRow(0, false);
 
 			const jsonOut = [
 				'basictable',
@@ -322,10 +445,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, inserting a row before index 2', () => {
@@ -334,10 +462,11 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertRow(2, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertRow(2, false);
 
 			const jsonOut = [
 				'basictable',
@@ -345,10 +474,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, inserting a row after index 3', () => {
@@ -357,10 +491,10 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertRow(3, true);
+			const mutateGridModel = (gridModel) => gridModel.insertRow(3, true);
 
 			const jsonOut = [
 				'basictable',
@@ -368,10 +502,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, inserting a row before index 0', () => {
@@ -380,10 +519,11 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertRow(0, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertRow(0, false);
 
 			const jsonOut = [
 				'basictable',
@@ -391,10 +531,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 2 header rows, inserting a row after index 1', () => {
@@ -403,10 +548,11 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertRow(1, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertRow(1, false);
 
 			const jsonOut = [
 				'basictable',
@@ -414,10 +560,15 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 
@@ -428,19 +579,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(0);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(0);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, deleting a row at index 2', () => {
@@ -449,19 +605,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(2);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(2);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, deleting a row at index 3', () => {
@@ -470,19 +631,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(3);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(3);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, deleting a row at index 0', () => {
@@ -491,19 +657,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(0);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(0);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 2 header rows, deleting a row at index 0', () => {
@@ -512,19 +683,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(0);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(0);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 2 header rows, deleting a row at index 1', () => {
@@ -533,19 +709,24 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteRow(1);
+			const mutateGridModel = (gridModel) => gridModel.deleteRow(1);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 
@@ -556,20 +737,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(0, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(0, false);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, adding 1 column before index 2', () => {
@@ -578,20 +765,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(2, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(2, false);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, adding 1 column after index 3', () => {
@@ -600,20 +793,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(3, true);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(3, true);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, adding 1 column before index 0', () => {
@@ -622,20 +821,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(0, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(0, false);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, adding 1 column before index 2', () => {
@@ -644,20 +849,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(2, false);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(2, false);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, adding 1 column after index 3', () => {
@@ -666,20 +877,26 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.insertColumn(3, true);
+			const mutateGridModel = (gridModel) =>
+				gridModel.insertColumn(3, true);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 
@@ -690,20 +907,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(0);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(0);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, deleting 1 column before index 2', () => {
@@ -712,20 +934,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(2);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(2);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table, deleting 1 column after index 3', () => {
@@ -734,20 +961,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(3);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(3);
 
 			const jsonOut = [
 				'basictable',
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, deleting 1 column before index 0', () => {
@@ -756,20 +988,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(0);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(0);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, deleting 1 column before index 2', () => {
@@ -778,20 +1015,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(2);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(2);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 
 		it('can handle a 4x4 table with 1 header row, deleting 1 column after index 3', () => {
@@ -800,20 +1042,25 @@ describe('Basic tables: XML to XML roundtrip', () => {
 				['head', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
 			];
 
-			const mutateGridModel = gridModel => gridModel.deleteColumn(3);
+			const mutateGridModel = (gridModel) => gridModel.deleteColumn(3);
 
 			const jsonOut = [
 				'basictable',
 				['head', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
 				['row', ['cell'], ['cell'], ['cell']],
-				['row', ['cell'], ['cell'], ['cell']]
+				['row', ['cell'], ['cell'], ['cell']],
 			];
 
-			transformTable(jsonIn, jsonOut, mutateGridModel, optionsWithoutHeaderCell);
+			transformTable(
+				jsonIn,
+				jsonOut,
+				mutateGridModel,
+				optionsWithoutHeaderCell
+			);
 		});
 	});
 });

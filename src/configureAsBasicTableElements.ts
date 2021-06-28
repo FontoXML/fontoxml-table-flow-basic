@@ -1,5 +1,12 @@
-import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements.js';
-import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
+import type {
+	AllowExpansionInContentView,
+	Widget,
+	WidgetSubAreaByName,
+} from 'fontoxml-families/src/types';
+import type { SxModule } from 'fontoxml-modular-schema-experience/src/sxManager';
+import type { XPathQuery, XPathTest } from 'fontoxml-selectors/src/types';
+import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements';
+import BasicTableDefinition from './table-definition/BasicTableDefinition';
 
 /**
  * Configure the given set of elements as a basic table. More configuration options for
@@ -157,11 +164,50 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition.js';
  *                                                                                              helper variables can optionally be used in this XPath expression which evaluate
  *                                                                                              to the total rows and total columns in a table.
  */
-export default function configureAsBasicTableElements(sxModule, options) {
+export default function configureAsBasicTableElements(
+	sxModule: SxModule,
+	options: {
+		priority?: number;
+		allowExpansionInContentView?: AllowExpansionInContentView;
+		table: {
+			localName: string;
+			namespaceURI?: string;
+			tableFilterSelector?: XPathTest;
+		};
+		headerRow?: {
+			localName?: string;
+			namespaceURI?: string;
+		};
+		row: {
+			localName: string;
+			namespaceURI?: string;
+		};
+		headerCell?: {
+			localName?: string;
+			namespaceURI?: string;
+			defaultTextContainer?: string;
+		};
+		cell: {
+			localName: string;
+			namespaceURI?: string;
+			defaultTextContainer?: string;
+		};
+		showInsertionWidget?: boolean;
+		showHighlightingWidget?: boolean;
+		rowBefore?: WidgetSubAreaByName | Array<Widget> | null;
+		columnBefore?: WidgetSubAreaByName | Array<Widget> | null;
+		columnWidgetMenuOperations?: Array<Object> | null;
+		rowWidgetMenuOperations?: Array<Object> | null;
+		useDefaultContextMenu?: boolean;
+		isCollapsibleQuery?: XPathQuery;
+		isInitiallyCollapsedQuery?: XPathQuery;
+	}
+): void {
 	options = options || {};
 	const tableDefinition = new BasicTableDefinition(options);
 
-	options.cell['defaultTextContainer'] = options.cell['defaultTextContainer'] || null;
+	options.cell['defaultTextContainer'] =
+		options.cell['defaultTextContainer'] || null;
 
 	configureAsTableElements(sxModule, options, tableDefinition);
 }

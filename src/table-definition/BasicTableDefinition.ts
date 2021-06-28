@@ -1,30 +1,31 @@
-import TableDefinition from 'fontoxml-table-flow/src/TableDefinition.js';
-import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy.js';
-import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy.js';
-import normalizeCellNodeStrategies from 'fontoxml-table-flow/src/normalizeCellNodeStrategies.js';
-import normalizeRowNodeStrategies from 'fontoxml-table-flow/src/normalizeRowNodeStrategies.js';
+import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
+import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy';
+import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy';
+import normalizeCellNodeStrategies from 'fontoxml-table-flow/src/normalizeCellNodeStrategies';
+import normalizeRowNodeStrategies from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
+import type { BasicTableOptions } from 'fontoxml-typescript-migration-debt/src/types';
 
 const DEFAULT_OPTIONS = {
 	table: {
 		localName: '',
 		namespaceURI: null,
-		tableFilterSelector: ''
+		tableFilterSelector: '',
 	},
 	headerRow: {
 		localName: '',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	row: {
 		localName: '',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	headerCell: {
 		localName: '',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 	cell: {
 		localName: '',
-		namespaceURI: null
+		namespaceURI: null,
 	},
 
 	showInsertionWidget: false,
@@ -36,11 +37,21 @@ const DEFAULT_OPTIONS = {
 	isInitiallyCollapsedQuery: 'true()',
 
 	// Widget menu operations
-	columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
-	rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
+	columnWidgetMenuOperations: [
+		{ contents: [{ name: 'column-delete-at-index' }] },
+	],
+	rowWidgetMenuOperations: [
+		{ contents: [{ name: 'contextual-row-delete' }] },
+	],
 };
 
-const configurableElementOptions = ['table', 'headerRow', 'row', 'headerCell', 'cell'];
+const configurableElementOptions = [
+	'table',
+	'headerRow',
+	'row',
+	'headerCell',
+	'cell',
+];
 const optionalOptions = [
 	'headerRow',
 	'headerCell',
@@ -52,10 +63,13 @@ const optionalOptions = [
 	'columnWidgetMenuOperations',
 	'rowWidgetMenuOperations',
 	'isCollapsibleQuery',
-	'isInitiallyCollapsedQuery'
+	'isInitiallyCollapsedQuery',
 ];
 
-function applyDefaults(options, defaultOptions) {
+function applyDefaults(
+	options: $TSFixMeAny,
+	defaultOptions: $TSFixMeAny
+): $TSFixMeAny {
 	// Each element configuration option must have a localName and there is no default value for it.
 	// Each element configuration option can have a namespaceURI but the default value is empty string
 	// The default tableFilterSelector is empty string
@@ -64,7 +78,11 @@ function applyDefaults(options, defaultOptions) {
 	for (const defaultOptionKey of Object.keys(defaultOptions)) {
 		const defaultOption = defaultOptions[defaultOptionKey];
 		if (!(defaultOptionKey in options)) {
-			if (optionalOptions.some(optionalOption => optionalOption === defaultOptionKey)) {
+			if (
+				optionalOptions.some(
+					(optionalOption) => optionalOption === defaultOptionKey
+				)
+			) {
 				continue;
 			}
 			throw new Error(
@@ -74,11 +92,17 @@ function applyDefaults(options, defaultOptions) {
 
 		const option = options[defaultOptionKey];
 
-		if (configurableElementOptions.some(elementOption => elementOption === defaultOptionKey)) {
+		if (
+			configurableElementOptions.some(
+				(elementOption) => elementOption === defaultOptionKey
+			)
+		) {
 			const newElementOption = (newOptions[defaultOptionKey] = {});
 
 			if (!option.localName || typeof option.localName !== 'string') {
-				throw new Error('Each element configuration option must have a localName.');
+				throw new Error(
+					'Each element configuration option must have a localName.'
+				);
 			}
 
 			newElementOption['localName'] = option['localName'];
@@ -87,9 +111,10 @@ function applyDefaults(options, defaultOptions) {
 				: defaultOption.namespaceURI;
 
 			if (defaultOptionKey === 'table') {
-				newElementOption['tableFilterSelector'] = option.tableFilterSelector
-					? option.tableFilterSelector
-					: defaultOption.tableFilterSelector;
+				newElementOption['tableFilterSelector'] =
+					option.tableFilterSelector
+						? option.tableFilterSelector
+						: defaultOption.tableFilterSelector;
 			}
 		} else {
 			newOptions[defaultOptionKey] = option || defaultOption;
@@ -99,16 +124,18 @@ function applyDefaults(options, defaultOptions) {
 	return newOptions;
 }
 
-function getTableDefinitionProperties(options) {
+function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 	options = applyDefaults(options, DEFAULT_OPTIONS);
 
 	const selectorParts = {
-		table: `Q{${options.table.namespaceURI || ''}}${options.table.localName +
+		table: `Q{${options.table.namespaceURI || ''}}${
+			options.table.localName +
 			(options.table.tableFilterSelector
 				? '[' + options.table.tableFilterSelector + ']'
-				: '')}`,
+				: '')
+		}`,
 		row: `Q{${options.row.namespaceURI || ''}}${options.row.localName}`,
-		cell: `Q{${options.cell.namespaceURI || ''}}${options.cell.localName}`
+		cell: `Q{${options.cell.namespaceURI || ''}}${options.cell.localName}`,
 	};
 
 	// Alias for selector parts
@@ -127,11 +154,13 @@ function getTableDefinitionProperties(options) {
 	}
 
 	if (options.headerCell) {
-		const headerCellSelector = `Q{${options.headerCell.namespaceURI || ''}}${
-			options.headerCell.localName
-		}`;
+		const headerCellSelector = `Q{${
+			options.headerCell.namespaceURI || ''
+		}}${options.headerCell.localName}`;
 		selectorParts.headerCell =
-			headerCellSelector !== selectorParts.cell ? headerCellSelector : null;
+			headerCellSelector !== selectorParts.cell
+				? headerCellSelector
+				: null;
 		headerCell = selectorParts.headerCell;
 	}
 
@@ -146,18 +175,23 @@ function getTableDefinitionProperties(options) {
 		// Data
 		getNumberOfColumnsXPathQuery: `./*[self::${row}${
 			headerRow ? ' or self::' + headerRow : ''
-		}][1]/*[self::${cell}${headerCell ? ' or self::' + headerCell : ''}] => count()`,
+		}][1]/*[self::${cell}${
+			headerCell ? ' or self::' + headerCell : ''
+		}] => count()`,
 
 		// Creates
 		createCellNodeStrategy: createCreateCellNodeStrategy(
 			options.cell.namespaceURI,
 			options.cell.localName
 		),
-		createRowStrategy: createCreateRowStrategy(options.row.namespaceURI, options.row.localName),
+		createRowStrategy: createCreateRowStrategy(
+			options.row.namespaceURI,
+			options.row.localName
+		),
 
 		// Widget menu operations
 		columnWidgetMenuOperations: options.columnWidgetMenuOperations,
-		rowWidgetMenuOperations: options.rowWidgetMenuOperations
+		rowWidgetMenuOperations: options.rowWidgetMenuOperations,
 	};
 
 	if (headerRow || headerCell) {
@@ -177,7 +211,7 @@ function getTableDefinitionProperties(options) {
 			normalizeRowNodeStrategies.createConvertFormerHeaderRowNodeStrategy(
 				options.row.namespaceURI,
 				options.row.localName
-			)
+			),
 		];
 	}
 
@@ -191,7 +225,7 @@ function getTableDefinitionProperties(options) {
 			normalizeCellNodeStrategies.createConvertFormerHeaderCellNodeStrategy(
 				options.cell.namespaceURI,
 				options.cell.localName
-			)
+			),
 		];
 	}
 
@@ -205,7 +239,7 @@ export default class BasicTableDefinition extends TableDefinition {
 	/**
 	 * @param {BasicTableOptions} options
 	 */
-	constructor(options) {
+	constructor(options: BasicTableOptions) {
 		super(getTableDefinitionProperties(options));
 	}
 }
