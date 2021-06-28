@@ -6,6 +6,7 @@ import type {
 import type { SxModule } from 'fontoxml-modular-schema-experience/src/sxManager';
 import type { XPathQuery, XPathTest } from 'fontoxml-selectors/src/types';
 import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements';
+
 import BasicTableDefinition from './table-definition/BasicTableDefinition';
 
 /**
@@ -194,10 +195,10 @@ export default function configureAsBasicTableElements(
 		};
 		showInsertionWidget?: boolean;
 		showHighlightingWidget?: boolean;
-		rowBefore?: WidgetSubAreaByName | Array<Widget> | null;
-		columnBefore?: WidgetSubAreaByName | Array<Widget> | null;
-		columnWidgetMenuOperations?: Array<Object> | null;
-		rowWidgetMenuOperations?: Array<Object> | null;
+		rowBefore?: Widget[] | WidgetSubAreaByName | null;
+		columnBefore?: Widget[] | WidgetSubAreaByName | null;
+		columnWidgetMenuOperations?: Object[] | null;
+		rowWidgetMenuOperations?: Object[] | null;
 		useDefaultContextMenu?: boolean;
 		isCollapsibleQuery?: XPathQuery;
 		isInitiallyCollapsedQuery?: XPathQuery;
@@ -206,8 +207,8 @@ export default function configureAsBasicTableElements(
 	options = options || {};
 	const tableDefinition = new BasicTableDefinition(options);
 
-	options.cell['defaultTextContainer'] =
-		options.cell['defaultTextContainer'] || null;
+	options.cell.defaultTextContainer =
+		options.cell.defaultTextContainer || null;
 
 	configureAsTableElements(sxModule, options, tableDefinition);
 }

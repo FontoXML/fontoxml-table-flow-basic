@@ -1,9 +1,9 @@
+import * as slimdom from 'slimdom';
+
 import Blueprint from 'fontoxml-blueprints/src/Blueprint';
 import CoreDocument from 'fontoxml-core/src/Document';
 import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
 import indicesManager from 'fontoxml-indices/src/indicesManager';
-import * as slimdom from 'slimdom';
-
 import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const stubFormat = {

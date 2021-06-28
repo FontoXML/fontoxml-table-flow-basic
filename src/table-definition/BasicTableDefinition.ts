@@ -1,8 +1,8 @@
-import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
 import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy';
 import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy';
 import normalizeCellNodeStrategies from 'fontoxml-table-flow/src/normalizeCellNodeStrategies';
 import normalizeRowNodeStrategies from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
+import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
 import type { BasicTableOptions } from 'fontoxml-typescript-migration-debt/src/types';
 
 const DEFAULT_OPTIONS = {
@@ -105,13 +105,13 @@ function applyDefaults(
 				);
 			}
 
-			newElementOption['localName'] = option['localName'];
-			newElementOption['namespaceURI'] = option.namespaceURI
+			newElementOption.localName = option.localName;
+			newElementOption.namespaceURI = option.namespaceURI
 				? option.namespaceURI
 				: defaultOption.namespaceURI;
 
 			if (defaultOptionKey === 'table') {
-				newElementOption['tableFilterSelector'] =
+				newElementOption.tableFilterSelector =
 					option.tableFilterSelector
 						? option.tableFilterSelector
 						: defaultOption.tableFilterSelector;
@@ -131,7 +131,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		table: `Q{${options.table.namespaceURI || ''}}${
 			options.table.localName +
 			(options.table.tableFilterSelector
-				? '[' + options.table.tableFilterSelector + ']'
+				? `[${options.table.tableFilterSelector}]`
 				: '')
 		}`,
 		row: `Q{${options.row.namespaceURI || ''}}${options.row.localName}`,
@@ -166,7 +166,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 
 	// Properties object
 	const properties = {
-		selectorParts: selectorParts,
+		selectorParts,
 
 		// Finds
 		findBodyRowNodesXPathQuery: `child::${row}`,
@@ -174,9 +174,9 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 
 		// Data
 		getNumberOfColumnsXPathQuery: `./*[self::${row}${
-			headerRow ? ' or self::' + headerRow : ''
+			headerRow ? ` or self::${headerRow}` : ''
 		}][1]/*[self::${cell}${
-			headerCell ? ' or self::' + headerCell : ''
+			headerCell ? ` or self::${headerCell}` : ''
 		}] => count()`,
 
 		// Creates

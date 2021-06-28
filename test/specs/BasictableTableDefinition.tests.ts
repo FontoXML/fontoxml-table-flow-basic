@@ -1,5 +1,6 @@
-import readOnlyBlueprint from 'fontoxml-blueprints/src/readOnlyBlueprint';
 import * as slimdom from 'slimdom';
+
+import readOnlyBlueprint from 'fontoxml-blueprints/src/readOnlyBlueprint';
 import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const options = {
@@ -45,23 +46,26 @@ describe('BasicTableDefinition', () => {
 	});
 
 	describe('isTable()', () => {
-		it('can recognize a table element', () =>
+		it('can recognize a table element', () => {
 			chai.assert.isTrue(
 				basicTableDefinition.isTable(tableNode, readOnlyBlueprint)
-			));
+			);
+		});
 	});
 
 	describe('isTableCell()', () => {
-		it('can recoginize a cell element', () =>
+		it('can recoginize a cell element', () => {
 			chai.assert.isTrue(
 				basicTableDefinition.isTableCell(cellNode, readOnlyBlueprint)
-			));
+			);
+		});
 	});
 
 	describe('isTablePart()', () => {
-		it('can recognize a table part element', () =>
+		it('can recognize a table part element', () => {
 			chai.assert.isTrue(
 				basicTableDefinition.isTablePart(rowNode, readOnlyBlueprint)
-			));
+			);
+		});
 	});
 });
