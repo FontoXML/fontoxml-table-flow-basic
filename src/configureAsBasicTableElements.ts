@@ -55,7 +55,8 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * ```
  *
  * Basic tables do not use elements to define columns, that is why the columnBefore widgets are
- * linked to the cell elements in the first row.
+ * linked to the cell elements in the first row. Check {@link fonto-documentation/docs/editor/fontoxml-editor-documentation/quickstarts/configure-tables.xml#id-d8cde415-f9e0-ba0c-14a5-cdb5f92d647d our guide}
+ * for more information on table widgets.
  *
  * Example usage for the table widgets:
  *
