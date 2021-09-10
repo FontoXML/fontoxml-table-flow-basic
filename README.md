@@ -87,8 +87,8 @@ configureAsBasicTableElements(sxModule, {
 	// This will show buttons that insert a new column or row. Optional, defaults to false.
 	showInsertionWidget: true,
 
-	// This will show areas that can be hovered over to highlight a column or row and that can be clicked to show a operations popover. Optional, defaults to false.
-	showHighlightingWidget: true,
+	// This will show areas that can be hovered over to select a column or row and that can be clicked to show a operations popover. Optional, defaults to false.
+	showSelectionWidget: true,
 
 	// This XPath expression determines whether or not a table has the ability to be collapsed. Optional, defaults to 'false()'.
 	// $rowCount and $columnCount helper variables can also optionally be used in the XPath expression to make it easier to configure

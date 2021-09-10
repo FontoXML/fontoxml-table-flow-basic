@@ -29,7 +29,9 @@ const DEFAULT_OPTIONS = {
 	},
 
 	showInsertionWidget: false,
-	showHighlightingWidget: false,
+	// This is deprecated.
+	showHighlightingWidget: undefined,
+	showSelectionWidget: false,
 	rowBefore: false,
 	columnBefore: false,
 	useDefaultContextMenu: true,
@@ -55,7 +57,9 @@ const configurableElementOptions = [
 const optionalOptions = [
 	'headerRow',
 	'headerCell',
+	// This is deprecated.
 	'showHighlightingWidget',
+	'showSelectionWidget',
 	'showInsertionWidget',
 	'rowBefore',
 	'columnBefore',

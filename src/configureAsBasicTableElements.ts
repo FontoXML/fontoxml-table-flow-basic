@@ -90,7 +90,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *         })
  *     ],
  *     showInsertionWidget: true,
- *     showHighlightingWidget: true,
+ *     showSelectionWidget: true,
  *     columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
  *     rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
  * });
@@ -140,7 +140,8 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * @param  {string}                             [options.cell.defaultTextContainer=null]        The default text container for the cell element.
  * @param  {boolean}                            [options.showInsertionWidget=false]             To add insertion buttons which insert a column or a row to
  *                                                                                              a specific place, default false.
- * @param  {boolean}                            [options.showHighlightingWidget=false]          To add highlighting bars which highlight columns and rows, and
+ * @param  {boolean}                            [options.showHighlightingWidget]                This is @deprecated. Instead use showSelectionWidget.
+ * @param  {boolean}                            [options.showSelectionWidget=false]             To add selection bars which select columns and rows, and
  *                                                                                              provide operations popover, default false.
  * @param  {WidgetSubAreaByName|Widget[]|null}  [options.rowBefore]                             Used to add a single icon widget before each row using
  *                                                                                              {@link createIconWidget}. Row widgets are linked to the row elements
@@ -195,7 +196,12 @@ export default function configureAsBasicTableElements(
 			defaultTextContainer?: string;
 		};
 		showInsertionWidget?: boolean;
+		/**
+		 * @deprecated
+		 * Instead use showSelectionWidget.
+		 */
 		showHighlightingWidget?: boolean;
+		showSelectionWidget?: boolean;
 		rowBefore?: Widget[] | WidgetSubAreaByName | null;
 		columnBefore?: Widget[] | WidgetSubAreaByName | null;
 		columnWidgetMenuOperations?: Object[] | null;
