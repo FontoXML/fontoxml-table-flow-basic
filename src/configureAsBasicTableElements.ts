@@ -55,7 +55,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * ```
  *
  * Basic tables do not use elements to define columns, that is why the columnBefore widgets are
- * linked to the cell elements in the first row. Check {@link fonto-documentation/docs/editor/fontoxml-editor-documentation/quickstarts/configure-tables.xml#id-d8cde415-f9e0-ba0c-14a5-cdb5f92d647d our guide}
+ * linked to the cell elements in the first row. Check {@link fonto-documentation/docs/configure/elements/configure-tables.xml#id-d8cde415-f9e0-ba0c-14a5-cdb5f92d647d our guide}
  * for more information on table widgets.
  *
  * Example usage for the table widgets:
@@ -109,7 +109,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *	});
  * ```
  *
- * Basic tables can also be configured to be collapsible. Refer to {@link fonto-documentation/docs/editor/fontoxml-editor-documentation/quickstarts/configure-tables.xml#id-6c3f43af-b40c-4fa3-ab47-f0fd2d4ab85c our guide} to learn more.
+ * Basic tables can also be configured to be collapsible. Refer to {@link fonto-documentation/docs/configure/elements/configure-tables.xml#id-6c3f43af-b40c-4fa3-ab47-f0fd2d4ab85c our guide} to learn more.
  *
  * @fontosdk
  * @category  add-on/fontoxml-table-flow-basic
