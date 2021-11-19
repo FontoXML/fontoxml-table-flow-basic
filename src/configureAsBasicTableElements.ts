@@ -1,9 +1,11 @@
 import type {
 	AllowExpansionInContentView,
+	DefaultTextContainer,
 	Widget,
 	WidgetSubAreaByName,
 } from 'fontoxml-families/src/types';
 import type { SxModule } from 'fontoxml-modular-schema-experience/src/sxManager';
+import type { ContextualOperation } from 'fontoxml-operations/src/types';
 import type { XPathQuery, XPathTest } from 'fontoxml-selectors/src/types';
 import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements';
 
@@ -120,24 +122,24 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * @param  {AllowExpansionInContentView}        [options.allowExpansionInContentView]           Defines the availability of expansion of a table.
  * @param  {Object}                             options.table                                   Configuration for the table element.
  * @param  {string}                             options.table.localName                         The name of the table element.
- * @param  {string}                             [options.table.namespaceURI=null]               The namespace URI of the table element.
+ * @param  {string|null}                        [options.table.namespaceURI=null]               The namespace URI of the table element.
  * @param  {XPathTest}                          [options.table.tableFilterSelector]             Additional override for which basic table elements should be regarded.
  *                                                                                              as tables. This can be used to configure conreffed tables as not being tables.
  * @param  {Object}                             [options.headerRow]                             Configuration for the header row element.
  * @param  {string}                             [options.headerRow.localName]                   The name of the header row element.
- * @param  {string}                             [options.headerRow.namespaceURI=null]           The namespace URI of the header row element.
+ * @param  {string|null}                        [options.headerRow.namespaceURI=null]           The namespace URI of the header row element.
  * @param  {Object}                             options.row                                     Configuration for the whole row.
  * @param  {string}                             options.row.localName                           The name of the row element.
- * @param  {string}                             [options.row.namespaceURI=null]                 The namespace URI of the row element.
+ * @param  {string|null}                        [options.row.namespaceURI=null]                 The namespace URI of the row element.
  * @param  {Object}                             [options.headerCell]                            Configuration for the header cell element. This option is optional.
  *                                                                                              If it is not set, the cell option will be used for headerCell.
  * @param  {string}                             [options.headerCell.localName]                  The name of the header cell element.
- * @param  {string}                             [options.headerCell.namespaceURI=null]          The namespace URI of the header cell.
- * @param  {string}                             [options.headerCell.defaultTextContainer=null]  The default text container for the header cell element.
+ * @param  {string|null}                        [options.headerCell.namespaceURI=null]          The namespace URI of the header cell.
+ * @param  {DefaultTextContainer}               [options.headerCell.defaultTextContainer=null]  The default text container for the header cell element.
  * @param  {Object}                             options.cell                                    Configuration for the cell element.
  * @param  {string}                             options.cell.localName                          The name of the cell element.
- * @param  {string}                             [options.cell.namespaceURI=null]                The namespace URI of the cell element.
- * @param  {string}                             [options.cell.defaultTextContainer=null]        The default text container for the cell element.
+ * @param  {string|null}                        [options.cell.namespaceURI=null]                The namespace URI of the cell element.
+ * @param  {DefaultTextContainer}               [options.cell.defaultTextContainer=null]        The default text container for the cell element.
  * @param  {boolean}                            [options.showInsertionWidget=false]             To add insertion buttons which insert a column or a row to
  *                                                                                              a specific place, default false.
  * @param  {boolean}                            [options.showHighlightingWidget]                This is @deprecated. Instead use showSelectionWidget.
@@ -150,10 +152,10 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *                                                                                              node of each column widget is the cell element in the first row.
  *                                                                                              {@link fonto-documentation/docs/editor/api/index.xml#id-9d2b1ad5-bbc1-6c44-d491-16dc213c53f2 All widgets}
  *                                                                                              are supported.
- * @param  {Object[]|null}                      [options.columnWidgetMenuOperations]            To configure table widget menu for columns. It accepts an array of
+ * @param  {ContextualOperation[]|null}         [options.columnWidgetMenuOperations]            To configure table widget menu for columns. It accepts an array of
  *                                                                                              {@link ContextualOperation}s, but only supports "name" and "contents"
  *                                                                                              properties. It is allowed to have only one layer of menu.
- * @param  {Object[]|null}                      [options.rowWidgetMenuOperations]               To configure table widget menu for rows. It accepts an array of
+ * @param  {ContextualOperation[]|null}         [options.rowWidgetMenuOperations]               To configure table widget menu for rows. It accepts an array of
  *                                                                                              {@link ContextualOperation}s, but only supports "name" and "contents" properties.
  *                                                                                              It is allowed to have only one layer of menu.
  * @param  {boolean}                            [options.useDefaultContextMenu=true]            Whether or not to use a preconfigured context menu for elements within the table.
@@ -174,26 +176,26 @@ export default function configureAsBasicTableElements(
 		allowExpansionInContentView?: AllowExpansionInContentView;
 		table: {
 			localName: string;
-			namespaceURI?: string;
+			namespaceURI?: string | null;
 			tableFilterSelector?: XPathTest;
 		};
 		headerRow?: {
 			localName?: string;
-			namespaceURI?: string;
+			namespaceURI?: string | null;
 		};
 		row: {
 			localName: string;
-			namespaceURI?: string;
+			namespaceURI?: string | null;
 		};
 		headerCell?: {
 			localName?: string;
-			namespaceURI?: string;
-			defaultTextContainer?: string;
+			namespaceURI?: string | null;
+			defaultTextContainer?: DefaultTextContainer;
 		};
 		cell: {
 			localName: string;
-			namespaceURI?: string;
-			defaultTextContainer?: string;
+			namespaceURI?: string | null;
+			defaultTextContainer?: DefaultTextContainer;
 		};
 		showInsertionWidget?: boolean;
 		/**
@@ -204,14 +206,13 @@ export default function configureAsBasicTableElements(
 		showSelectionWidget?: boolean;
 		rowBefore?: Widget[] | WidgetSubAreaByName | null;
 		columnBefore?: Widget[] | WidgetSubAreaByName | null;
-		columnWidgetMenuOperations?: Object[] | null;
-		rowWidgetMenuOperations?: Object[] | null;
+		columnWidgetMenuOperations?: ContextualOperation[] | null;
+		rowWidgetMenuOperations?: ContextualOperation[] | null;
 		useDefaultContextMenu?: boolean;
 		isCollapsibleQuery?: XPathQuery;
 		isInitiallyCollapsedQuery?: XPathQuery;
 	}
 ): void {
-	options = options || {};
 	const tableDefinition = new BasicTableDefinition(options);
 
 	options.cell.defaultTextContainer =
