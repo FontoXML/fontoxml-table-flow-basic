@@ -135,11 +135,11 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *                                                                                              If it is not set, the cell option will be used for headerCell.
  * @param  {string}                             [options.headerCell.localName]                  The name of the header cell element.
  * @param  {string|null}                        [options.headerCell.namespaceURI=null]          The namespace URI of the header cell.
- * @param  {DefaultTextContainer}               [options.headerCell.defaultTextContainer=null]  The default text container for the header cell element.
+ * @param  {DefaultTextContainer}               [options.headerCell.defaultTextContainer]       The default text container for the header cell element.
  * @param  {Object}                             options.cell                                    Configuration for the cell element.
  * @param  {string}                             options.cell.localName                          The name of the cell element.
  * @param  {string|null}                        [options.cell.namespaceURI=null]                The namespace URI of the cell element.
- * @param  {DefaultTextContainer}               [options.cell.defaultTextContainer=null]        The default text container for the cell element.
+ * @param  {DefaultTextContainer}               [options.cell.defaultTextContainer]             The default text container for the cell element.
  * @param  {boolean}                            [options.showInsertionWidget=false]             To add insertion buttons which insert a column or a row to
  *                                                                                              a specific place, default false.
  * @param  {boolean}                            [options.showHighlightingWidget]                This is @deprecated. Instead use showSelectionWidget.
@@ -214,9 +214,6 @@ export default function configureAsBasicTableElements(
 	}
 ): void {
 	const tableDefinition = new BasicTableDefinition(options);
-
-	options.cell.defaultTextContainer =
-		options.cell.defaultTextContainer || null;
 
 	configureAsTableElements(sxModule, options, tableDefinition);
 }
