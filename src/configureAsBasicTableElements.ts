@@ -113,7 +113,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *
  * Basic tables can also be configured to be collapsible. Refer to {@link fonto-documentation/docs/configure/elements/configure-tables.xml#id-6c3f43af-b40c-4fa3-ab47-f0fd2d4ab85c our guide} to learn more.
  *
- * @fontosdk
+ * @fontosdk importable
  * @category  add-on/fontoxml-table-flow-basic
  *
  * @param  {SxModule}                           sxModule
