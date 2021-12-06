@@ -237,11 +237,12 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 }
 
 /**
+ * @remarks
  * Configures the table definition for basic tables.
  */
 export default class BasicTableDefinition extends TableDefinition {
 	/**
-	 * @param {BasicTableOptions} options
+	 * @param options -
 	 */
 	constructor(options: BasicTableOptions) {
 		super(getTableDefinitionProperties(options));
