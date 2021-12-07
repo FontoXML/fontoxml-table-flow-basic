@@ -150,7 +150,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * @param options.cell.defaultTextContainer       - The default text container for the cell element.
  * @param options.showInsertionWidget             - To add insertion buttons which insert a column or a
  *                                                  row to a specific place, default false.
- * @param options.showHighlightingWidget          - This is @deprecated. Instead use
+ * @param options.showHighlightingWidget          - This is deprecated. Instead use
  *                                                  showSelectionWidget.
  * @param options.showSelectionWidget             - To add selection bars which select columns and
  *                                                  rows, and provide operations popover, default
