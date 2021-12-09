@@ -162,7 +162,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  * @param options.columnBefore                    - Used to add one or multiple widgets before each
  *                                                  column. The context node of each column widget is
  *                                                  the cell element in the first row. {@link
- *                                                  fonto-documentation/docs/editor/api/index.xml#id-9d2b1ad5-bbc1-6c44-d491-16dc213c53f2
+ *                                                  fonto-documentation/docs/generated-content/editor-api/index.xml#id-cd5577eb-9790-92d6-e3ac-8d1554fe6b12
  *                                                  | All widgets} are supported.
  * @param options.columnWidgetMenuOperations      - To configure table widget menu for columns. It
  *                                                  accepts an array of {@link ContextualOperation}s,
