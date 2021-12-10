@@ -38,13 +38,12 @@ const DEFAULT_OPTIONS = {
 	isCollapsibleQuery: 'false()',
 	isInitiallyCollapsedQuery: 'true()',
 
+	// Deprecated
+	columnWidgetMenuOperations: undefined,
+	rowWidgetMenuOperations: undefined,
 	// Widget menu operations
-	columnWidgetMenuOperations: [
-		{ contents: [{ name: 'column-delete-at-index' }] },
-	],
-	rowWidgetMenuOperations: [
-		{ contents: [{ name: 'contextual-row-delete' }] },
-	],
+	columnsWidgetMenuOperations: [{ contents: [{ name: 'columns-delete' }] }],
+	rowsWidgetMenuOperations: [{ contents: [{ name: 'rows-delete' }] }],
 };
 
 const configurableElementOptions = [
@@ -64,8 +63,12 @@ const optionalOptions = [
 	'rowBefore',
 	'columnBefore',
 	'useDefaultContextMenu',
+	// This is deprecated.
 	'columnWidgetMenuOperations',
+	'columnsWidgetMenuOperations',
+	// This is deprecated.
 	'rowWidgetMenuOperations',
+	'rowsWidgetMenuOperations',
 	'isCollapsibleQuery',
 	'isInitiallyCollapsedQuery',
 ];
@@ -194,8 +197,12 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		),
 
 		// Widget menu operations
+		// This is deprecated. Remove in 7.20
 		columnWidgetMenuOperations: options.columnWidgetMenuOperations,
+		columnsWidgetMenuOperations: options.columnsWidgetMenuOperations,
+		// This is deprecated. Remove in 7.20
 		rowWidgetMenuOperations: options.rowWidgetMenuOperations,
+		rowsWidgetMenuOperations: options.rowsWidgetMenuOperations,
 	};
 
 	if (headerRow || headerCell) {

@@ -8,6 +8,7 @@ import type { SxModule } from 'fontoxml-modular-schema-experience/src/sxManager'
 import type { ContextualOperation } from 'fontoxml-operations/src/types';
 import type { XPathQuery, XPathTest } from 'fontoxml-selectors/src/types';
 import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements';
+import logDeprecationWarning from 'fontoxml-utils/src/logDeprecationWarning';
 
 import BasicTableDefinition from './table-definition/BasicTableDefinition';
 
@@ -95,9 +96,9 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *         })
  *     ],
  *     showInsertionWidget: true,
- *     showSelectionWidget: true,
- *     columnWidgetMenuOperations: [{ contents: [{ name: 'column-delete-at-index' }] }],
- *     rowWidgetMenuOperations: [{ contents: [{ name: 'contextual-row-delete' }] }]
+ *     showHighlightingWidget: true,
+ *     columnsWidgetMenuOperations: [{ contents: [{ name: 'columns-delete' }] }],
+ *     rowsWidgetMenuOperations: [{ contents: [{ name: 'rows-delete' }] }]
  * });
  * ```
  *
@@ -164,11 +165,15 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  *                                                  the cell element in the first row. {@link
  *                                                  fonto-documentation/docs/generated-content/editor-api/index.xml#id-cd5577eb-9790-92d6-e3ac-8d1554fe6b12
  *                                                  | All widgets} are supported.
- * @param options.columnWidgetMenuOperations      - To configure table widget menu for columns. It
- *                                                  accepts an array of {@link ContextualOperation}s,
- *                                                  but only supports "name" and "contents" properties.
- *                                                  It is allowed to have only one layer of menu.
- * @param options.rowWidgetMenuOperations         - To configure table widget menu for rows. It accepts
+ * @param options.columnWidgetMenuOperations      - This is deprecated. Use columnsWidgetMenuOperations
+ *                                                  instead.
+ * @param options.columnsWidgetMenuOperations     - To configure table widget menu for columns. It accepts
+ *                                                  an array of {@link ContextualOperation}s, but only
+ *                                                  supports "name" and "contents" properties. It is
+ *                                                  allowed to have only one layer of menu.
+ * @param options.rowWidgetMenuOperations         - This is deprecated. Use rowsWidgetMenuOperations
+ *                                                  instead.
+ * @param options.rowsWidgetMenuOperations        - To configure table widget menu for rows. It accepts
  *                                                  an array of {@link ContextualOperation}s, but only
  *                                                  supports "name" and "contents" properties. It is
  *                                                  allowed to have only one layer of menu.
@@ -225,8 +230,18 @@ export default function configureAsBasicTableElements(
 		showSelectionWidget?: boolean;
 		rowBefore?: Widget[] | WidgetSubAreaByName | null;
 		columnBefore?: Widget[] | WidgetSubAreaByName | null;
+		/**
+		 * @deprecated
+		 * Instead use columnsWidgetMenuOperations.
+		 */
 		columnWidgetMenuOperations?: ContextualOperation[] | null;
+		columnsWidgetMenuOperations?: ContextualOperation[] | null;
+		/**
+		 * @deprecated
+		 * Instead use rowsWidgetMenuOperations.
+		 */
 		rowWidgetMenuOperations?: ContextualOperation[] | null;
+		rowsWidgetMenuOperations?: ContextualOperation[] | null;
 		useDefaultContextMenu?: boolean;
 		isCollapsibleQuery?: XPathQuery;
 		isInitiallyCollapsedQuery?: XPathQuery;
