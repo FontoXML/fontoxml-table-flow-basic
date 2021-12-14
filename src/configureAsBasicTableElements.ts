@@ -1,14 +1,9 @@
-import type {
-	AllowExpansionInContentView,
-	DefaultTextContainer,
-	Widget,
-	WidgetSubAreaByName,
-} from 'fontoxml-families/src/types';
 import type { SxModule } from 'fontoxml-modular-schema-experience/src/sxManager';
-import type { ContextualOperation } from 'fontoxml-operations/src/types';
-import type { XPathQuery, XPathTest } from 'fontoxml-selectors/src/types';
 import configureAsTableElements from 'fontoxml-table-flow/src/configureAsTableElements';
-import logDeprecationWarning from 'fontoxml-utils/src/logDeprecationWarning';
+import type {
+	TableElementsBasicOptions,
+	TableElementsSharedOptions,
+} from 'fontoxml-table-flow/src/types.configureAsTableElements';
 
 import BasicTableDefinition from './table-definition/BasicTableDefinition';
 
@@ -196,56 +191,7 @@ import BasicTableDefinition from './table-definition/BasicTableDefinition';
  */
 export default function configureAsBasicTableElements(
 	sxModule: SxModule,
-	options: {
-		priority?: number;
-		allowExpansionInContentView?: AllowExpansionInContentView;
-		table: {
-			localName: string;
-			namespaceURI?: string | null;
-			tableFilterSelector?: XPathTest;
-		};
-		headerRow?: {
-			localName?: string;
-			namespaceURI?: string | null;
-		};
-		row: {
-			localName: string;
-			namespaceURI?: string | null;
-		};
-		headerCell?: {
-			localName?: string;
-			namespaceURI?: string | null;
-			defaultTextContainer?: DefaultTextContainer;
-		};
-		cell: {
-			localName: string;
-			namespaceURI?: string | null;
-			defaultTextContainer?: DefaultTextContainer;
-		};
-		showInsertionWidget?: boolean;
-		/**
-		 * @deprecated Instead use showSelectionWidget.
-		 */
-		showHighlightingWidget?: boolean;
-		showSelectionWidget?: boolean;
-		rowBefore?: Widget[] | WidgetSubAreaByName | null;
-		columnBefore?: Widget[] | WidgetSubAreaByName | null;
-		/**
-		 * @deprecated
-		 * Instead use columnsWidgetMenuOperations.
-		 */
-		columnWidgetMenuOperations?: ContextualOperation[] | null;
-		columnsWidgetMenuOperations?: ContextualOperation[] | null;
-		/**
-		 * @deprecated
-		 * Instead use rowsWidgetMenuOperations.
-		 */
-		rowWidgetMenuOperations?: ContextualOperation[] | null;
-		rowsWidgetMenuOperations?: ContextualOperation[] | null;
-		useDefaultContextMenu?: boolean;
-		isCollapsibleQuery?: XPathQuery;
-		isInitiallyCollapsedQuery?: XPathQuery;
-	}
+	options: TableElementsBasicOptions & TableElementsSharedOptions
 ): void {
 	const tableDefinition = new BasicTableDefinition(options);
 
