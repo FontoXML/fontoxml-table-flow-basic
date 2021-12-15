@@ -13,6 +13,8 @@ export type TableElementsBasicOptions = {
 	/**
 	 * @remarks
 	 * Configuration for the table element.
+	 *
+	 * @fontosdk
 	 */
 	table: {
 		/**
