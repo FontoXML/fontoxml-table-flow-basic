@@ -1,8 +1,16 @@
+import xq from 'fontoxml-selectors/src/xq';
 import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy';
 import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy';
-import normalizeCellNodeStrategies from 'fontoxml-table-flow/src/normalizeCellNodeStrategies';
-import normalizeRowNodeStrategies from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
+import {
+	createConvertFormerHeaderCellNodeStrategy,
+	createConvertHeaderCellNodeStrategy,
+} from 'fontoxml-table-flow/src/normalizeCellNodeStrategies';
+import {
+	createConvertFormerHeaderRowNodeStrategy,
+	createConvertNormalRowNodeStrategy,
+} from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
 import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
+import type { TablePartSelectors } from 'fontoxml-table-flow/src/types';
 import type { BasicTableOptions } from 'fontoxml-typescript-migration-debt/src/types';
 
 const DEFAULT_OPTIONS = {
@@ -134,57 +142,107 @@ function applyDefaults(
 function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 	options = applyDefaults(options, DEFAULT_OPTIONS);
 
-	const selectorParts = {
-		table: `Q{${options.table.namespaceURI || ''}}${
-			options.table.localName +
-			(options.table.tableFilterSelector
-				? `[${options.table.tableFilterSelector}]`
-				: '')
-		}`,
-		row: `Q{${options.row.namespaceURI || ''}}${options.row.localName}`,
-		cell: `Q{${options.cell.namespaceURI || ''}}${options.cell.localName}`,
+	const tablePartSelectors: TablePartSelectors = {
+		table: xq`${xq(
+			`self::Q{${options.table.namespaceURI || ''}}${
+				options.table.localName
+			}`
+		)}
+			[${
+				options.table.tableFilterSelector
+					? options.table.tableFilterSelector
+					: xq`true()`
+			}]`,
+		row: xq(
+			`self::Q{${options.row.namespaceURI || ''}}${options.row.localName}`
+		),
+		cell: xq(
+			`self::Q{${options.cell.namespaceURI || ''}}${
+				options.cell.localName
+			}`
+		),
 	};
 
+	if (
+		options.headerRow &&
+		(options.headerRow.namespaceURI !== options.row.namespaceURI ||
+			options.headerRow.localName !== options.row.localName)
+	) {
+		tablePartSelectors.headerRow = xq(
+			`self::Q{${options.headerRow.namespaceURI || ''}}${
+				options.headerRow.localName
+			}`
+		);
+	}
+
+	if (
+		options.headerCell &&
+		(options.headerCell.namespaceURI !== options.cell.namespaceURI ||
+			options.headerCell.localName !== options.cell.localName)
+	) {
+		tablePartSelectors.headerCell = xq(
+			`self::Q{${options.headerCell.namespaceURI || ''}}${
+				options.headerCell.localName
+			}`
+		);
+	}
+
 	// Alias for selector parts
-	let headerRow = null;
-	const row = selectorParts.row;
-	let headerCell = null;
-	const cell = selectorParts.cell;
-
-	if (options.headerRow) {
-		const headerRowSelector = `Q{${options.headerRow.namespaceURI || ''}}${
-			options.headerRow.localName
-		}`;
-		selectorParts.headerRow =
-			headerRowSelector !== selectorParts.row ? headerRowSelector : null;
-		headerRow = selectorParts.headerRow;
-	}
-
-	if (options.headerCell) {
-		const headerCellSelector = `Q{${
-			options.headerCell.namespaceURI || ''
-		}}${options.headerCell.localName}`;
-		selectorParts.headerCell =
-			headerCellSelector !== selectorParts.cell
-				? headerCellSelector
-				: null;
-		headerCell = selectorParts.headerCell;
-	}
+	const headerRow = tablePartSelectors.headerRow;
+	const row = tablePartSelectors.row;
+	const headerCell = tablePartSelectors.headerCell;
+	const cell = tablePartSelectors.cell;
 
 	// Properties object
-	const properties = {
-		selectorParts,
+	return {
+		tablePartSelectors,
 
 		// Finds
-		findBodyRowNodesXPathQuery: `child::${row}`,
-		findCellNodesXPathQuery: `child::${cell}`,
+		findHeaderRowNodesXPathQuery: headerRow
+			? xq`child::*[${headerRow}]`
+			: headerCell
+			? xq`child::*[${row}[child::*[${headerCell}]]`
+			: undefined,
+
+		findBodyRowNodesXPathQuery: headerCell
+			? xq`child::*[${row}[child::*[${cell}]]]`
+			: xq`child::*[${row}]`,
+
+		findCellNodesXPathQuery: headerCell
+			? xq`child::*[${cell} or ${headerCell}]`
+			: xq`child::*[${cell}]`,
+
+		// Normalizations
+		normalizeCellNodeStrategies: headerCell
+			? [
+					createConvertHeaderCellNodeStrategy(
+						options.headerCell.namespaceURI,
+						options.headerCell.localName
+					),
+					createConvertFormerHeaderCellNodeStrategy(
+						options.cell.namespaceURI,
+						options.cell.localName
+					),
+			  ]
+			: undefined,
+
+		normalizeRowNodeStrategies: headerRow
+			? [
+					createConvertNormalRowNodeStrategy(
+						options.headerRow.namespaceURI,
+						options.headerRow.localName
+					),
+					createConvertFormerHeaderRowNodeStrategy(
+						options.row.namespaceURI,
+						options.row.localName
+					),
+			  ]
+			: undefined,
 
 		// Data
-		getNumberOfColumnsXPathQuery: `./*[self::${row}${
-			headerRow ? ` or self::${headerRow}` : ''
-		}][1]/*[self::${cell}${
-			headerCell ? ` or self::${headerCell}` : ''
-		}] => count()`,
+		getNumberOfColumnsXPathQuery: xq`child::*[${row} or ${
+			headerRow || xq`false()`
+		}][1]/child::*[${cell} or ${headerCell || xq`false()`}] => count()`,
 
 		// Creates
 		createCellNodeStrategy: createCreateCellNodeStrategy(
@@ -204,43 +262,6 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		rowWidgetMenuOperations: options.rowWidgetMenuOperations,
 		rowsWidgetMenuOperations: options.rowsWidgetMenuOperations,
 	};
-
-	if (headerRow || headerCell) {
-		properties.findHeaderRowNodesXPathQuery = headerRow
-			? `child::${headerRow}`
-			: `child::${row}[child::${headerCell}]`;
-
-		properties.findBodyRowNodesXPathQuery = headerRow
-			? `child::${row}`
-			: `child::${row}[child::${cell}]`;
-
-		properties.normalizeRowNodeStrategies = headerRow && [
-			normalizeRowNodeStrategies.createConvertNormalRowNodeStrategy(
-				options.headerRow.namespaceURI,
-				options.headerRow.localName
-			),
-			normalizeRowNodeStrategies.createConvertFormerHeaderRowNodeStrategy(
-				options.row.namespaceURI,
-				options.row.localName
-			),
-		];
-	}
-
-	if (headerCell) {
-		properties.findCellNodesXPathQuery = `child::*[self::${cell} or self::${headerCell}]`;
-		properties.normalizeCellNodeStrategies = [
-			normalizeCellNodeStrategies.createConvertHeaderCellNodeStrategy(
-				options.headerCell.namespaceURI,
-				options.headerCell.localName
-			),
-			normalizeCellNodeStrategies.createConvertFormerHeaderCellNodeStrategy(
-				options.cell.namespaceURI,
-				options.cell.localName
-			),
-		];
-	}
-
-	return properties;
 }
 
 /**
@@ -251,7 +272,7 @@ export default class BasicTableDefinition extends TableDefinition {
 	/**
 	 * @param options -
 	 */
-	constructor(options: BasicTableOptions) {
+	public constructor(options: BasicTableOptions) {
 		super(getTableDefinitionProperties(options));
 	}
 }

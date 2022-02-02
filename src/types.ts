@@ -1,5 +1,5 @@
 import type { DefaultTextContainerConfiguration } from 'fontoxml-base-flow/src/types';
-import type { XPathTest } from 'fontoxml-selectors/src/types';
+import type { XPathTest, XQExpression } from 'fontoxml-selectors/src/types';
 
 /**
  * @remarks
@@ -39,7 +39,7 @@ export type TableElementsBasicOptions = {
 		 *
 		 * @fontosdk
 		 */
-		tableFilterSelector?: XPathTest;
+		tableFilterSelector?: XPathTest | XQExpression;
 	};
 	/**
 	 * @remarks
