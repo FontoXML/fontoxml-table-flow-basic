@@ -1,4 +1,4 @@
-import xq from 'fontoxml-selectors/src/xq';
+import xq, { ensureXQExpression } from 'fontoxml-selectors/src/xq';
 import createCreateCellNodeStrategy from 'fontoxml-table-flow/src/createCreateCellNodeStrategy';
 import createCreateRowStrategy from 'fontoxml-table-flow/src/createCreateRowStrategy';
 import {
@@ -143,7 +143,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 	options = applyDefaults(options, DEFAULT_OPTIONS);
 
 	const tablePartSelectors: TablePartSelectors = {
-		table: xq`${xq(
+		table: xq`${ensureXQExpression(
 			`self::Q{${options.table.namespaceURI || ''}}${
 				options.table.localName
 			}`
@@ -153,10 +153,10 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 					? options.table.tableFilterSelector
 					: xq`true()`
 			}]`,
-		row: xq(
+		row: ensureXQExpression(
 			`self::Q{${options.row.namespaceURI || ''}}${options.row.localName}`
 		),
-		cell: xq(
+		cell: ensureXQExpression(
 			`self::Q{${options.cell.namespaceURI || ''}}${
 				options.cell.localName
 			}`
@@ -168,7 +168,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		(options.headerRow.namespaceURI !== options.row.namespaceURI ||
 			options.headerRow.localName !== options.row.localName)
 	) {
-		tablePartSelectors.headerRow = xq(
+		tablePartSelectors.headerRow = ensureXQExpression(
 			`self::Q{${options.headerRow.namespaceURI || ''}}${
 				options.headerRow.localName
 			}`
@@ -180,7 +180,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		(options.headerCell.namespaceURI !== options.cell.namespaceURI ||
 			options.headerCell.localName !== options.cell.localName)
 	) {
-		tablePartSelectors.headerCell = xq(
+		tablePartSelectors.headerCell = ensureXQExpression(
 			`self::Q{${options.headerCell.namespaceURI || ''}}${
 				options.headerCell.localName
 			}`
