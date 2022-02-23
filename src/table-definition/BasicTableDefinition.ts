@@ -255,10 +255,10 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		),
 
 		// Widget menu operations
-		// This is deprecated. Remove in 7.20
+		// This is deprecated. Remove in 8.2
 		columnWidgetMenuOperations: options.columnWidgetMenuOperations,
 		columnsWidgetMenuOperations: options.columnsWidgetMenuOperations,
-		// This is deprecated. Remove in 7.20
+		// This is deprecated. Remove in 8.2
 		rowWidgetMenuOperations: options.rowWidgetMenuOperations,
 		rowsWidgetMenuOperations: options.rowsWidgetMenuOperations,
 	};
