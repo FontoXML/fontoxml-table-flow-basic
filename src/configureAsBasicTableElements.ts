@@ -89,7 +89,7 @@ import type { TableElementsBasicOptions } from './types';
  *         })
  *     ],
  *     showInsertionWidget: true,
- *     showHighlightingWidget: true,
+ *     showSelectionWidget: true,
  *     columnsWidgetMenuOperations: [{ contents: [{ name: 'columns-delete' }] }],
  *     rowsWidgetMenuOperations: [{ contents: [{ name: 'rows-delete' }] }]
  * });
