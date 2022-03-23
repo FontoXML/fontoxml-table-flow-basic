@@ -48,7 +48,6 @@ import type { TableElementsBasicOptions } from './types';
  *         { name: 'table-contextual-delete' }
  *     ],
  *     markupLabel: 'table',
- *     tabNavigationItemSelectorOrNodeSpec: 'self::cell'
  * });
  * ```
  *
