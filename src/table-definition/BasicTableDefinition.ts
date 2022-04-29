@@ -11,7 +11,8 @@ import {
 } from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
 import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
 import type { TablePartSelectors } from 'fontoxml-table-flow/src/types';
-import type { BasicTableOptions } from 'fontoxml-typescript-migration-debt/src/types';
+
+import type { TableElementsBasicOptions } from '../types';
 
 const DEFAULT_OPTIONS = {
 	table: {
@@ -268,7 +269,7 @@ export default class BasicTableDefinition extends TableDefinition {
 	/**
 	 * @param options -
 	 */
-	public constructor(options: BasicTableOptions) {
+	public constructor(options: TableElementsBasicOptions) {
 		super(getTableDefinitionProperties(options));
 	}
 }
