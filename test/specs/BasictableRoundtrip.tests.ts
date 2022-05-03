@@ -4,6 +4,8 @@ import Blueprint from 'fontoxml-blueprints/src/Blueprint';
 import CoreDocument from 'fontoxml-core/src/Document';
 import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
 import indicesManager from 'fontoxml-indices/src/indicesManager';
+import type { Format } from 'fontoxml-schema-experience/src/format';
+import type TableGridModel from 'fontoxml-table-flow/src/TableGridModel/TableGridModel';
 import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
 
 const stubFormat = {
@@ -17,7 +19,7 @@ const stubFormat = {
 		canContain: () => true,
 		validateDown: () => [],
 	},
-};
+} as unknown as Format;
 
 const optionsWithoutHeaderCell = {
 	table: {
@@ -70,7 +72,7 @@ describe('Basic tables: XML to XML roundtrip', () => {
 
 	beforeEach(() => {
 		documentNode = new slimdom.Document();
-		coreDocument = new CoreDocument(documentNode);
+		coreDocument = new CoreDocument(documentNode, null);
 
 		blueprint = new Blueprint(coreDocument.dom);
 	});
@@ -78,7 +80,7 @@ describe('Basic tables: XML to XML roundtrip', () => {
 	function transformTable(
 		jsonIn,
 		jsonOut,
-		mutateGridModel = () => {},
+		mutateGridModel = (_gridModel: TableGridModel) => {},
 		options
 	) {
 		coreDocument.dom.mutate(() => jsonMLMapper.parse(jsonIn, documentNode));
@@ -88,7 +90,7 @@ describe('Basic tables: XML to XML roundtrip', () => {
 		const gridModel = tableDefinition.buildTableGridModel(
 			tableNode,
 			blueprint
-		);
+		) as TableGridModel;
 		chai.assert.isOk(gridModel);
 
 		mutateGridModel(gridModel);

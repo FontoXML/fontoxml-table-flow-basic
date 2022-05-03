@@ -147,7 +147,7 @@ function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
 		)}
 			[${
 				options.table.tableFilterSelector
-					? options.table.tableFilterSelector
+					? ensureXQExpression(options.table.tableFilterSelector)
 					: xq`true()`
 			}]`,
 		row: ensureXQExpression(

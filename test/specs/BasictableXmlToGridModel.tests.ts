@@ -33,7 +33,7 @@ describe('Basic tables: XML to grid model', () => {
 
 	beforeEach(() => {
 		documentNode = new slimdom.Document();
-		coreDocument = new CoreDocument(documentNode);
+		coreDocument = new CoreDocument(documentNode, null);
 
 		blueprint = new Blueprint(coreDocument.dom);
 		basicTableDefinition = new BasicTableDefinition(options);

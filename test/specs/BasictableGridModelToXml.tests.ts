@@ -48,7 +48,7 @@ describe('Basic tables: Grid model to XML', () => {
 
 	beforeEach(() => {
 		documentNode = new slimdom.Document();
-		coreDocument = new CoreDocument(documentNode);
+		coreDocument = new CoreDocument(documentNode, null);
 		blueprint = new Blueprint(coreDocument.dom);
 
 		tableNode = documentNode.createElement('basictable');
@@ -167,7 +167,7 @@ describe('Basic tables: Grid model to XML', () => {
 
 		beforeEach(() => {
 			documentNode = new slimdom.Document();
-			coreDocument = new CoreDocument(documentNode);
+			coreDocument = new CoreDocument(documentNode, null);
 			blueprint = new Blueprint(coreDocument.dom);
 
 			tableNode = documentNode.createElement('basictable');
