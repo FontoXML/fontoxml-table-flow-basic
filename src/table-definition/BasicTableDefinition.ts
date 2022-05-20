@@ -10,48 +10,55 @@ import {
 	createConvertNormalRowNodeStrategy,
 } from 'fontoxml-table-flow/src/normalizeRowNodeStrategies';
 import TableDefinition from 'fontoxml-table-flow/src/TableDefinition';
-import type { TablePartSelectors } from 'fontoxml-table-flow/src/types';
+import type {
+	TableDefinitionProperties,
+	TableElementsSharedOptions,
+	TablePartSelectors,
+} from 'fontoxml-table-flow/src/types';
 
 import type { TableElementsBasicOptions } from '../types';
 
-const DEFAULT_OPTIONS = {
-	table: {
-		localName: '',
-		namespaceURI: null,
-		tableFilterSelector: '',
-	},
-	headerRow: {
-		localName: '',
-		namespaceURI: null,
-	},
-	row: {
-		localName: '',
-		namespaceURI: null,
-	},
-	headerCell: {
-		localName: '',
-		namespaceURI: null,
-	},
-	cell: {
-		localName: '',
-		namespaceURI: null,
-	},
+const DEFAULT_OPTIONS: TableElementsBasicOptions & TableElementsSharedOptions =
+	{
+		table: {
+			localName: '',
+			namespaceURI: null,
+			tableFilterSelector: '',
+		},
+		headerRow: {
+			localName: '',
+			namespaceURI: null,
+		},
+		row: {
+			localName: '',
+			namespaceURI: null,
+		},
+		headerCell: {
+			localName: '',
+			namespaceURI: null,
+		},
+		cell: {
+			localName: '',
+			namespaceURI: null,
+		},
 
-	showInsertionWidget: false,
-	showSelectionWidget: false,
-	rowBefore: false,
-	columnBefore: false,
-	useDefaultContextMenu: true,
-	isCollapsibleQuery: 'false()',
-	isInitiallyCollapsedQuery: 'true()',
+		showInsertionWidget: false,
+		showSelectionWidget: false,
+		rowBefore: null,
+		columnBefore: null,
+		useDefaultContextMenu: true,
+		isCollapsibleQuery: 'false()',
+		isInitiallyCollapsedQuery: 'true()',
 
-	// Deprecated
-	columnWidgetMenuOperations: undefined,
-	rowWidgetMenuOperations: undefined,
-	// Widget menu operations
-	columnsWidgetMenuOperations: [{ contents: [{ name: 'columns-delete' }] }],
-	rowsWidgetMenuOperations: [{ contents: [{ name: 'rows-delete' }] }],
-};
+		// Deprecated
+		columnWidgetMenuOperations: undefined,
+		rowWidgetMenuOperations: undefined,
+		// Widget menu operations
+		columnsWidgetMenuOperations: [
+			{ contents: [{ name: 'columns-delete' }] },
+		],
+		rowsWidgetMenuOperations: [{ contents: [{ name: 'rows-delete' }] }],
+	};
 
 const configurableElementOptions = [
 	'table',
@@ -79,14 +86,15 @@ const optionalOptions = [
 ];
 
 function applyDefaults(
-	options: $TSFixMeAny,
-	defaultOptions: $TSFixMeAny
-): $TSFixMeAny {
+	options: TableElementsBasicOptions & TableElementsSharedOptions,
+	defaultOptions: TableElementsBasicOptions & TableElementsSharedOptions
+): TableElementsBasicOptions & TableElementsSharedOptions {
 	// Each element configuration option must have a localName and there is no default value for it.
 	// Each element configuration option can have a namespaceURI but the default value is empty string
 	// The default tableFilterSelector is empty string
 
-	const newOptions = {};
+	const newOptions: TableElementsBasicOptions & TableElementsSharedOptions =
+		{} as TableElementsBasicOptions & TableElementsSharedOptions;
 	for (const defaultOptionKey of Object.keys(defaultOptions)) {
 		const defaultOption = defaultOptions[defaultOptionKey];
 		if (!(defaultOptionKey in options)) {
@@ -109,7 +117,10 @@ function applyDefaults(
 				(elementOption) => elementOption === defaultOptionKey
 			)
 		) {
-			const newElementOption = (newOptions[defaultOptionKey] = {});
+			const newElementOption: {
+				localName?: string;
+				namespaceURI?: string | null;
+			} = (newOptions[defaultOptionKey] = {});
 
 			if (!option.localName || typeof option.localName !== 'string') {
 				throw new Error(
@@ -123,10 +134,11 @@ function applyDefaults(
 				: defaultOption.namespaceURI;
 
 			if (defaultOptionKey === 'table') {
-				newElementOption.tableFilterSelector =
-					option.tableFilterSelector
-						? option.tableFilterSelector
-						: defaultOption.tableFilterSelector;
+				(
+					newElementOption as TableElementsBasicOptions['table']
+				).tableFilterSelector = option.tableFilterSelector
+					? option.tableFilterSelector
+					: defaultOption.tableFilterSelector;
 			}
 		} else {
 			newOptions[defaultOptionKey] = option || defaultOption;
@@ -136,7 +148,9 @@ function applyDefaults(
 	return newOptions;
 }
 
-function getTableDefinitionProperties(options: $TSFixMeAny): $TSFixMeAny {
+function getTableDefinitionProperties(
+	options: TableElementsBasicOptions & TableElementsSharedOptions
+): TableDefinitionProperties {
 	options = applyDefaults(options, DEFAULT_OPTIONS);
 
 	const tablePartSelectors: TablePartSelectors = {
