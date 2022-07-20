@@ -50,9 +50,6 @@ const DEFAULT_OPTIONS: TableElementsBasicOptions & TableElementsSharedOptions =
 		isCollapsibleQuery: 'false()',
 		isInitiallyCollapsedQuery: 'true()',
 
-		// Deprecated
-		columnWidgetMenuOperations: undefined,
-		rowWidgetMenuOperations: undefined,
 		// Widget menu operations
 		columnsWidgetMenuOperations: [
 			{ contents: [{ name: 'columns-delete' }] },
@@ -75,11 +72,7 @@ const optionalOptions = [
 	'rowBefore',
 	'columnBefore',
 	'useDefaultContextMenu',
-	// This is deprecated.
-	'columnWidgetMenuOperations',
 	'columnsWidgetMenuOperations',
-	// This is deprecated.
-	'rowWidgetMenuOperations',
 	'rowsWidgetMenuOperations',
 	'isCollapsibleQuery',
 	'isInitiallyCollapsedQuery',
@@ -266,11 +259,7 @@ function getTableDefinitionProperties(
 		),
 
 		// Widget menu operations
-		// This is deprecated. Remove in 8.2
-		columnWidgetMenuOperations: options.columnWidgetMenuOperations,
 		columnsWidgetMenuOperations: options.columnsWidgetMenuOperations,
-		// This is deprecated. Remove in 8.2
-		rowWidgetMenuOperations: options.rowWidgetMenuOperations,
 		rowsWidgetMenuOperations: options.rowsWidgetMenuOperations,
 	};
 }
