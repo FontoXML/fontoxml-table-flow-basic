@@ -1,22 +1,18 @@
-import * as slimdom from 'slimdom';
-
-import Blueprint from 'fontoxml-blueprints/src/Blueprint';
-import CoreDocument from 'fontoxml-core/src/Document';
-import jsonMLMapper from 'fontoxml-dom-utils/src/jsonMLMapper';
-import indicesManager from 'fontoxml-indices/src/indicesManager';
+import type {
+	FontoDocumentNode,
+	FontoElementNode,
+	JsonMl,
+} from 'fontoxml-dom-utils/src/types';
+import xq from 'fontoxml-selectors/src/xq';
+import type { TableElementsSharedOptions } from 'fontoxml-table-flow/src/types';
 import BasicTableDefinition from 'fontoxml-table-flow-basic/src/table-definition/BasicTableDefinition';
-
-const stubFormat = {
-	synthesizer: {
-		completeStructure: () => true,
-	},
-	metadata: {
-		get: (_option, _node) => false,
-	},
-	validator: {
-		canContain: () => true,
-	},
-};
+import type { TableElementsBasicOptions } from 'fontoxml-table-flow-basic/src/types';
+import { assertDocumentAsJsonMl } from 'fontoxml-unit-test-utils/src/unitTestAssertionHelpers';
+import UnitTestEnvironment from 'fontoxml-unit-test-utils/src/UnitTestEnvironment';
+import {
+	findFirstNodeInDocument,
+	runWithBlueprint,
+} from 'fontoxml-unit-test-utils/src/unitTestSetupHelpers';
 
 const options = {
 	table: {
@@ -39,104 +35,75 @@ const options = {
 };
 
 describe('Basic tables: Grid model to XML', () => {
-	let blueprint;
-	let coreDocument;
-	let createTable;
-	let documentNode;
-	let tableDefinition;
-	let tableNode;
-
+	let environment: UnitTestEnvironment;
 	beforeEach(() => {
-		documentNode = new slimdom.Document();
-		coreDocument = new CoreDocument(documentNode, null);
-		blueprint = new Blueprint(coreDocument.dom);
-
-		tableNode = documentNode.createElement('basictable');
-
-		tableDefinition = new BasicTableDefinition(options);
-		createTable = tableDefinition.getTableGridModelBuilder();
-
-		coreDocument.dom.mutate(() => {
-			documentNode.appendChild(tableNode);
-		});
+		environment = new UnitTestEnvironment();
 	});
+	afterEach(() => {
+		environment.destroy();
+	});
+
+	function runTest(
+		numberOfRows: number,
+		numberOfColumns: number,
+		hasHeader: boolean,
+		options: TableElementsBasicOptions & TableElementsSharedOptions,
+		expected: JsonMl
+	): void {
+		const documentId = environment.createDocumentFromJsonMl(['basictable']);
+		const documentNode = findFirstNodeInDocument(
+			documentId,
+			xq`self::node()`
+		) as FontoDocumentNode;
+		const tableDefinition = new BasicTableDefinition(options);
+		const tableNode = findFirstNodeInDocument(
+			documentId,
+			xq`/basictable`
+		) as FontoElementNode;
+		runWithBlueprint((blueprint, _, format) => {
+			const tableGridModel = tableDefinition.getTableGridModelBuilder()(
+				numberOfRows,
+				numberOfColumns,
+				hasHeader,
+				documentNode
+			);
+			chai.assert.isTrue(
+				tableDefinition.applyToDom(
+					tableGridModel,
+					tableNode,
+					blueprint,
+					format
+				)
+			);
+		});
+		assertDocumentAsJsonMl(documentId, expected);
+	}
 
 	describe('Basics', () => {
 		it('can serialize a 1x1 table', () => {
-			const tableGridModel = createTable(1, 1, false, documentNode);
-			chai.assert.isTrue(
-				tableDefinition.applyToDom(
-					tableGridModel,
-					documentNode.firstChild,
-					blueprint,
-					stubFormat
-				)
-			);
-
-			blueprint.realize();
-			// The changes will be set to merge with the base index, this needs to be commited.
-			indicesManager.getIndexSet().commitMerge();
-
-			chai.assert.deepEqual(
-				jsonMLMapper.serialize(documentNode.firstChild),
-				['basictable', ['row', ['cell']]]
-			);
+			runTest(1, 1, false, options, ['basictable', ['row', ['cell']]]);
 		});
 
 		it('can serialize a 4x4 table', () => {
-			const tableGridModel = createTable(4, 4, false, documentNode);
-			chai.assert.isTrue(
-				tableDefinition.applyToDom(
-					tableGridModel,
-					documentNode.firstChild,
-					blueprint,
-					stubFormat
-				)
-			);
-
-			blueprint.realize();
-			// The changes will be set to merge with the base index, this needs to be commited.
-			indicesManager.getIndexSet().commitMerge();
-
-			chai.assert.deepEqual(
-				jsonMLMapper.serialize(documentNode.firstChild),
-				[
-					'basictable',
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				]
-			);
+			runTest(4, 4, false, options, [
+				'basictable',
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+			]);
 		});
 	});
 
 	describe('Headers', () => {
 		it('can serialize a 4x4 table', () => {
-			const tableGridModel = createTable(4, 4, true, documentNode);
-			chai.assert.isTrue(
-				tableDefinition.applyToDom(
-					tableGridModel,
-					documentNode.firstChild,
-					blueprint,
-					stubFormat
-				)
-			);
-
-			blueprint.realize();
-			// The changes will be set to merge with the base index, this needs to be commited.
-			indicesManager.getIndexSet().commitMerge();
-
-			chai.assert.deepEqual(
-				jsonMLMapper.serialize(documentNode.firstChild),
-				[
-					'basictable',
-					['head', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				]
-			);
+			runTest(4, 4, true, options, [
+				'basictable',
+				['head', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+			]);
 		});
 	});
 
@@ -165,52 +132,20 @@ describe('Basic tables: Grid model to XML', () => {
 			},
 		};
 
-		beforeEach(() => {
-			documentNode = new slimdom.Document();
-			coreDocument = new CoreDocument(documentNode, null);
-			blueprint = new Blueprint(coreDocument.dom);
-
-			tableNode = documentNode.createElement('basictable');
-
-			tableDefinition = new BasicTableDefinition(optionsWithHeaderCell);
-			createTable = tableDefinition.getTableGridModelBuilder();
-
-			coreDocument.dom.mutate(() => {
-				documentNode.appendChild(tableNode);
-			});
-		});
-
 		it('can serialize a 4x4 table', () => {
-			const tableGridModel = createTable(4, 4, true, documentNode);
-			chai.assert.isTrue(
-				tableDefinition.applyToDom(
-					tableGridModel,
-					documentNode.firstChild,
-					blueprint,
-					stubFormat
-				)
-			);
-
-			blueprint.realize();
-			// The changes will be set to merge with the base index, this needs to be commited.
-			indicesManager.getIndexSet().commitMerge();
-
-			chai.assert.deepEqual(
-				jsonMLMapper.serialize(documentNode.firstChild),
+			runTest(4, 4, true, optionsWithHeaderCell, [
+				'basictable',
 				[
-					'basictable',
-					[
-						'headerRow',
-						['headerCell'],
-						['headerCell'],
-						['headerCell'],
-						['headerCell'],
-					],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-					['row', ['cell'], ['cell'], ['cell'], ['cell']],
-				]
-			);
+					'headerRow',
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+					['headerCell'],
+				],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+				['row', ['cell'], ['cell'], ['cell'], ['cell']],
+			]);
 		});
 	});
 });
